@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>capstone.neevs.io</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .user-info {
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Protected Site</h1>
+  <div id="auth-status"></div>
+
+  <script type="module">
+    import { auth, login, logout } from './auth/api.js';
+
+    const statusDiv = document.getElementById('auth-status');
+
+    if (auth.isAuthenticated()) {
+      const user = auth.currentUser();
+      statusDiv.innerHTML = `
+        <div class="user-info">
+          <p>✅ Logged in as: <strong>${user.email}</strong></p>
+          <button onclick="logout()">Logout</button>
+        </div>
+        <p>Welcome to your protected site!</p>
+      `;
+      window.logout = () => logout();
+    } else {
+      statusDiv.innerHTML = `
+        <p>🔒 Please log in to access this site.</p>
+        <button onclick="login()">Login with Google</button>
+      `;
+      window.login = () => login();
+    }
+  </script>
+</body>
+</html>

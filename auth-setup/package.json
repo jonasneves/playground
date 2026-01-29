@@ -1,0 +1,10 @@
+{
+  "name": "github-pages-auth-setup",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "auth0": "^4.11.0",
+    "@octokit/rest": "^20.0.2",
+    "prompts": "^2.4.2"
+  }
+}
