@@ -43,7 +43,7 @@ function AppWrapper({ appName, children }: { appName: string; children: React.Re
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
           return;
         }
-        window.location.hash = '#/gallery';
+        window.location.hash = '/gallery';
       }
     };
 

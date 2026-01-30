@@ -41,7 +41,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
 
   const handleHome = () => {
     setIsOpen(false);
-    window.location.hash = '#/gallery';
+    window.location.hash = '/gallery';
   };
 
   if (!user) return null;
