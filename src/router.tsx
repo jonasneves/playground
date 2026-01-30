@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createHashRouter, Navigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/framework';
 import { useAnalyticsStore } from '@/stores';
+import { NotFound } from '@/components/NotFound';
 
 const ChatApp = lazy(() => import('./apps/chat/ChatApp'));
 const CMSApp = lazy(() => import('./apps/cms/CMSApp'));
@@ -13,16 +14,8 @@ const SettingsApp = lazy(() => import('./apps/settings/SettingsApp'));
 function AppLoader() {
   return (
     <div className="loading">
-      <div style={{ textAlign: 'center' }}>
-        <div style={{
-          border: '4px solid rgba(255,255,255,0.3)',
-          borderRadius: '50%',
-          borderTopColor: 'white',
-          width: '50px',
-          height: '50px',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto 20px'
-        }} />
+      <div className="text-center">
+        <div className="w-12 h-12 mx-auto mb-5 border-4 border-white/30 border-t-white rounded-full animate-spin" />
         <p>Loading app...</p>
       </div>
     </div>
@@ -100,5 +93,9 @@ export const router = createHashRouter([
         <SettingsApp />
       </AppWrapper>
     )
+  },
+  {
+    path: '*',
+    element: <NotFound />
   }
 ]);

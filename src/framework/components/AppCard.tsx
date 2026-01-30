@@ -77,6 +77,7 @@ export function AppCard({ appName, manifest, path, onLaunch, version }: AppCardP
 
         <button
           onClick={() => onLaunch(path, manifest.name)}
+          aria-label={`Launch ${manifest.name} app`}
           className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white px-3 py-2 rounded-lg font-medium text-xs transition-all duration-200 group-hover:gap-2 mt-auto"
         >
           Launch App

@@ -43,6 +43,8 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
     <div ref={menuRef} className="fixed top-6 right-6 z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Open user menu"
+        aria-expanded={isOpen}
         className="flex items-center gap-3 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full px-4 py-2 hover:bg-white transition-all duration-200 shadow-sm"
       >
         <img
@@ -57,6 +59,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
       <div className={`absolute top-14 right-0 bg-white border border-neutral-200 rounded-2xl shadow-xl min-w-[200px] overflow-hidden transition-all duration-200 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
         <button
           onClick={() => window.location.reload()}
+          aria-label="Refresh page"
           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
         >
           <RefreshCw size={16} /> Refresh
@@ -64,6 +67,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
 
         <button
           onClick={handleSettings}
+          aria-label="Open settings"
           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors border-t border-neutral-100"
         >
           <Settings size={16} /> Settings
@@ -71,6 +75,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
 
         <button
           onClick={handleClearCache}
+          aria-label="Clear cache"
           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors border-t border-neutral-100"
         >
           <Trash2 size={16} /> Clear Cache
@@ -78,6 +83,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
 
         <button
           onClick={onLogout}
+          aria-label="Log out"
           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-neutral-100"
         >
           <LogOut size={16} /> Logout
