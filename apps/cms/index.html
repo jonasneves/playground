@@ -65,7 +65,7 @@
           { headers: { 'Authorization': `Bearer ${GitHubAuth.getToken()}` }}
         );
         const data = await response.json();
-        eval(atob(data.content));
+        eval(decodeURIComponent(escape(atob(data.content))));
         repo = initRepo(GitHubAuth.getToken());
         await loadFiles();
       }

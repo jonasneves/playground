@@ -23,7 +23,7 @@ async function initApp(callback) {
       { headers: { 'Authorization': `Bearer ${window.INJECTED_TOKEN}` }}
     );
     const data = await response.json();
-    eval(atob(data.content));
+    eval(decodeURIComponent(escape(atob(data.content))));
 
     window.repo = initRepo(window.INJECTED_TOKEN);
 
@@ -43,7 +43,7 @@ async function initApp(callback) {
           { headers: { 'Authorization': `Bearer ${window.GitHubAuth.getToken()}` }}
         );
         const data = await response.json();
-        eval(atob(data.content));
+        eval(decodeURIComponent(escape(atob(data.content))));
 
         window.repo = initRepo(window.GitHubAuth.getToken());
 

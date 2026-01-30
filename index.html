@@ -168,7 +168,7 @@
       });
       const data = await response.json();
       const script = document.createElement('script');
-      script.textContent = atob(data.content);
+      script.textContent = decodeURIComponent(escape(atob(data.content)));
       document.head.appendChild(script);
     }
 

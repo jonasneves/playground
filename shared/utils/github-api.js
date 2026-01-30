@@ -69,6 +69,10 @@ class GitHubRepo {
     return btoa(unescape(encodeURIComponent(content)));
   }
 
+  decodeContent(base64Content) {
+    return decodeURIComponent(escape(atob(base64Content)));
+  }
+
   invalidateCache(path) {
     localStorage.removeItem(this.cachePrefix + path);
   }
@@ -79,7 +83,7 @@ class GitHubRepo {
 
     const data = await this.request(path);
     const result = {
-      content: atob(data.content),
+      content: this.decodeContent(data.content),
       sha: data.sha,
       path: data.path,
       name: data.name,
