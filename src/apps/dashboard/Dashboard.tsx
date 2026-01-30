@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { StatCard } from './StatCard';
 import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
@@ -51,12 +51,8 @@ export default function Dashboard() {
     }
   };
 
-  // Memoized activity message
-  const activityMessage = useMemo(() => {
-    if (!stats) return '';
-
-    return `Repository contains ${stats.appCount} apps, ${stats.utilCount} shared modules, and ${stats.fileCount} root files. Last checked: ${stats.lastChecked.toLocaleString()}`;
-  }, [stats]);
+  const activityMessage = !stats ? '' :
+    `Repository contains ${stats.appCount} apps, ${stats.utilCount} shared modules, and ${stats.fileCount} root files. Last checked: ${stats.lastChecked.toLocaleString()}`;
 
   const handleBack = () => {
     window.parent.postMessage('close-app', '*');

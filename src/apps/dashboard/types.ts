@@ -4,8 +4,3 @@ export interface RepoStats {
   fileCount: number;
   lastChecked: Date;
 }
-
-export interface StatCardProps {
-  title: string;
-  value: number | string;
-}

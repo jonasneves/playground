@@ -19,6 +19,10 @@ export default function CMSApp() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const filterSystemFiles = useCallback((items: FileNode[]) =>
+    items.filter(item => !item.name.startsWith('.') && item.name !== 'node_modules'),
+  []);
+
   useEffect(() => {
     loadRootDirectory();
   }, []);
@@ -27,10 +31,7 @@ export default function CMSApp() {
     try {
       setIsLoading(true);
       const items = await api.listDirectory('');
-      const filteredItems = items.filter(
-        (item: FileNode) => !item.name.startsWith('.') && item.name !== 'node_modules'
-      );
-      setRootFiles(filteredItems);
+      setRootFiles(filterSystemFiles(items));
     } catch (error: any) {
       console.error('Error loading directory:', error);
       alert(`Error: ${error.message}`);
@@ -42,14 +43,12 @@ export default function CMSApp() {
   const loadDirectory = useCallback(async (path: string): Promise<FileNode[]> => {
     try {
       const items = await api.listDirectory(path);
-      return items.filter(
-        (item: FileNode) => !item.name.startsWith('.') && item.name !== 'node_modules'
-      );
+      return filterSystemFiles(items);
     } catch (error: any) {
       console.error('Error loading directory:', error);
       return [];
     }
-  }, [api]);
+  }, [api, filterSystemFiles]);
 
   const handleFileSelect = useCallback(async (file: FileNode) => {
     if (file.type === 'dir') return;

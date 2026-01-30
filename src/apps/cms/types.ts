@@ -13,8 +13,3 @@ export interface FileData {
   name?: string;
   size?: number;
 }
-
-export interface DirectoryItem extends FileNode {
-  isOpen?: boolean;
-  children?: DirectoryItem[];
-}

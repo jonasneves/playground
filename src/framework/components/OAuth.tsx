@@ -4,7 +4,6 @@ import type { User } from '../types';
 interface OAuthProps {
   children: React.ReactNode;
   oauthServiceUrl: string;
-  storageKey?: string;
   onAuthChange: (token: string | null, user: User | null) => void;
   isAuthenticated: boolean;
 }
