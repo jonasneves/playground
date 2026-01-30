@@ -1,68 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<style>
-body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#667eea,#764ba2)}
-.s{border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;width:40px;height:40px;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#a{display:none;width:100%;height:100vh}
-#a.loaded{display:block}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prototype Gallery Framework</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./styles/global.css">
 </head>
 <body>
-<div id="l"><div class="s"></div></div>
-<div id="a"></div>
-<script src="https://oauth.neevs.io/github-auth.js?v=2" integrity="sha384-yCvoyjf6LKk2Yc6oSRenxRV0yFNdjeQ5ANuXIcRN50VoX/X8S4YJ9mU2+cT9MGW1" crossorigin="anonymous"></script>
-<script>
-GitHubAuth.init({
-  autoRedirect: true,
-  onLogin: async function(user) {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token") || GitHubAuth.getToken();
-
-      if (!token) throw new Error("No token");
-
-      window.__INJECTED_TOKEN = token;
-      window.__INJECTED_USER = user;
-
-      const response = await fetch("https://api.github.com/repos/jonasneves/duke-capstone/contents/index.html", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Accept": "application/vnd.github.v3+json"
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch");
-
-      const data = await response.json();
-      const html = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
-
-      document.getElementById("l").style.display = "none";
-
-      const appContainer = document.getElementById("a");
-      appContainer.innerHTML = html;
-      appContainer.classList.add("loaded");
-
-      const scripts = appContainer.getElementsByTagName("script");
-      for (let script of scripts) {
-        const newScript = document.createElement("script");
-        if (script.src) {
-          newScript.src = script.src;
-        } else {
-          newScript.textContent = script.textContent;
-        }
-        document.body.appendChild(newScript);
-      }
-    } catch (error) {
-      console.error("Load error:", error);
-      document.getElementById("l").innerHTML = '<div class="s" style="border-top-color:#f66"></div>';
-    }
-  }
-});
-</script>
+  <div id="root"></div>
+  <div style="max-width: 800px; margin: 100px auto; padding: 40px; text-align: center;">
+    <h1>Prototype Gallery Framework</h1>
+    <p>Generic React framework for building prototype galleries with GitHub integration.</p>
+    <div style="margin-top: 40px; text-align: left; background: #f5f5f5; padding: 20px; border-radius: 8px;">
+      <h3>Available Resources:</h3>
+      <ul>
+        <li><code>framework.es.js</code> - ES Module build (10 KB gzipped)</li>
+        <li><code>framework.umd.js</code> - UMD build (9 KB gzipped)</li>
+        <li><code>styles/global.css</code> - Default styles</li>
+      </ul>
+      <h3 style="margin-top: 20px;">Usage:</h3>
+      <p>Import the framework in your project and configure with your repository settings.</p>
+      <p><a href="https://github.com/jonasneves/duke-capstone">View Documentation on GitHub</a></p>
+    </div>
+  </div>
 </body>
 </html>
