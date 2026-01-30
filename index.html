@@ -3,151 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Duke Capstone - Protected</title>
+  <title>Prototype Gallery</title>
+  <link rel="stylesheet" href="data:text/css;base64," id="common-styles">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 800px;
-      margin: 80px auto;
-      padding: 0 20px;
-      line-height: 1.6;
-    }
-
-    h1 { color: #001A57; }
-
-    button {
-      background: #24292e;
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover { background: #000; }
-
-    .loading {
-      color: #666;
+      padding: 40px 20px;
       text-align: center;
-      padding: 40px;
+      margin-bottom: 40px;
     }
-
-    .error {
-      display: none;
-      background: #ffebee;
-      border-left: 4px solid #f44336;
-      padding: 16px;
-      margin: 24px 0;
-      border-radius: 4px;
-      color: #c62828;
-    }
-
-    .content {
-      display: none;
-    }
-    .content.visible {
-      display: block;
-    }
-
-    .user-info {
+    .header h1 { margin: 0 0 10px 0; font-size: 2.5em; }
+    .header p { margin: 0; opacity: 0.9; }
+    .user-bar {
+      background: white;
+      padding: 12px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      background: #e8f5e9;
-      border-left: 4px solid #4caf50;
-      padding: 16px;
-      margin: 24px 0;
-      border-radius: 4px;
     }
-    .user-info img {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-    }
-    .user-info button {
-      margin-left: auto;
-    }
-
-    #protectedContent {
-      margin-top: 24px;
-      padding: 20px;
-      background: #f5f5f5;
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .user-info img { width: 32px; height: 32px; border-radius: 50%; }
+    .app-card {
+      background: white;
       border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    #protectedContent h1:first-child {
-      margin-top: 0;
+    .app-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     }
-    #protectedContent .placeholder {
-      color: #666;
+    .app-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
+    .app-card-body { padding: 20px; }
+    .app-card h3 { margin: 0 0 8px 0; color: #2d3748; }
+    .app-card p { margin: 0 0 16px 0; color: #718096; font-size: 14px; }
+    .app-meta { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #edf2f7;
+      color: #4a5568;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .app-card a {
+      display: inline-block;
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .app-card a:hover { background: #5568d3; }
   </style>
 </head>
 <body>
-  <h1>Duke Capstone Project</h1>
-
-  <div id="loading" class="loading">
-    <p>Authenticating...</p>
-  </div>
-
-  <div id="error" class="error"></div>
-
-  <div id="content" class="content">
+  <div class="user-bar">
     <div class="user-info">
-      <img id="userAvatar" src="" alt="User avatar">
-      <span><strong>Authenticated as:</strong> <span id="userName"></span> (@<span id="userLogin"></span>)</span>
-      <button onclick="GitHubAuth.logout()">Logout</button>
+      <img id="userAvatar" src="" alt="">
+      <span id="userName"></span>
     </div>
-
-    <div id="protectedContent">
-      <p class="placeholder">Loading protected content...</p>
+    <div>
+      <a href="#" class="btn btn-secondary" style="margin-right: 8px;" onclick="location.reload()">Refresh</a>
+      <button class="btn btn-danger" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <script
-    src="https://oauth.neevs.io/github-auth.js?v=2"
-    integrity="sha384-yCvoyjf6LKk2Yc6oSRenxRV0yFNdjeQ5ANuXIcRN50VoX/X8S4YJ9mU2+cT9MGW1"
-    crossorigin="anonymous">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <div class="header">
+    <h1>🚀 Prototype Gallery</h1>
+    <p>Your private collection of experimental applications</p>
+  </div>
+
+  <div class="container">
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading applications...</p>
+    </div>
+    <div id="app-grid" class="grid" style="display: none;"></div>
+  </div>
+
   <script>
-    const CONTENT_URL = 'https://api.github.com/repos/jonasneves/duke-capstone/contents/content/main.md';
+    const token = window.GitHubAuth.getToken();
 
-    async function fetchProtectedContent(token) {
-      const response = await fetch(CONTENT_URL, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
+    fetch('https://api.github.com/repos/jonasneves/duke-capstone/contents/shared/styles/common.css', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('common-styles').href = 'data:text/css;base64,' + data.content;
+    });
 
-      if (!response.ok) {
-        const message = response.status === 404
-          ? 'Content not found or you do not have access to this repository.'
-          : `Failed to fetch content: ${response.status} ${response.statusText}`;
-        throw new Error(message);
-      }
+    const script = document.createElement('script');
+    fetch('https://api.github.com/repos/jonasneves/duke-capstone/contents/shared/utils/github-api.js', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+      script.textContent = atob(data.content);
+      document.head.appendChild(script);
+      init();
+    });
 
-      const data = await response.json();
-      const content = atob(data.content);
-      document.getElementById('protectedContent').innerHTML = marked.parse(content);
+    async function init() {
+      const user = window.GitHubAuth.getUser();
+      document.getElementById('userAvatar').src = user.avatar_url;
+      document.getElementById('userName').textContent = user.login;
+      window.initRepo(token);
+      await loadApps();
     }
 
-    GitHubAuth.init({
-      autoRedirect: true,
-
-      onLogin: async (user) => {
+    async function loadApps() {
+      try {
+        const apps = await repo.listDirectory('apps');
+        const appData = [];
+        for (const app of apps.filter(a => a.type === 'dir')) {
+          const manifest = await repo.getManifest(app.path);
+          if (manifest) appData.push({ ...manifest, path: app.path });
+        }
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').classList.add('visible');
-        document.getElementById('userAvatar').src = user.avatar_url;
-        document.getElementById('userName').textContent = user.name || 'N/A';
-        document.getElementById('userLogin').textContent = user.login;
-
-        fetchProtectedContent(GitHubAuth.getToken()).catch((error) => {
-          document.getElementById('protectedContent').innerHTML =
-            `<div class="error" style="display:block;"><strong>Error:</strong> ${error.message}</div>`;
-        });
+        document.getElementById('app-grid').style.display = 'grid';
+        appData.forEach(renderAppCard);
+      } catch (error) {
+        document.getElementById('loading').innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
       }
-    });
+    }
+
+    function renderAppCard(app) {
+      const card = document.createElement('div');
+      card.className = 'app-card';
+      const tech = app.tech ? app.tech.map(t => `<span class="badge">${t}</span>`).join('') : '';
+      card.innerHTML = `
+        <img src="${app.thumbnail || ''}" alt="${app.name}" onerror="this.style.display='none'">
+        <div class="app-card-body">
+          <h3>${app.name}</h3>
+          <p>${app.description}</p>
+          <div class="app-meta">${tech}</div>
+          <a href="apps/${app.slug}/">Launch App →</a>
+        </div>
+      `;
+      document.getElementById('app-grid').appendChild(card);
+    }
+
+    function logout() {
+      if (confirm('Logout?')) window.GitHubAuth.logout();
+    }
   </script>
 </body>
 </html>
