@@ -51,7 +51,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
         aria-expanded={isOpen}
-        className="group relative flex items-center gap-0 hover:gap-2 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full py-1 pl-1 hover:pr-3 hover:bg-white transition-[padding,background-color,gap] duration-300 ease-out shadow-sm"
+        className="group relative flex items-center gap-2 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full py-1 px-1 hover:pr-3 hover:bg-white transition-[padding,background-color] duration-300 ease-out shadow-sm"
       >
         {user ? (
           <>
