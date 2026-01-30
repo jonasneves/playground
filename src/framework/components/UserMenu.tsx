@@ -40,8 +40,8 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
   };
 
   const handleHome = () => {
-    navigate('/gallery', { replace: true });
     setIsOpen(false);
+    window.location.hash = '#/gallery';
   };
 
   if (!user) return null;
@@ -60,7 +60,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
           loading="lazy"
           className="w-10 h-10 rounded-full ring-2 ring-white flex-shrink-0"
         />
-        <span className="text-sm font-medium text-neutral-600 whitespace-nowrap w-0 group-hover:w-auto pr-0 group-hover:pr-1 opacity-0 group-hover:opacity-100 transition-all duration-200">{user.name?.split(' ')[0] || user.login}</span>
+        <span className="text-sm font-medium text-neutral-600 whitespace-nowrap w-0 group-hover:w-auto pl-0 group-hover:pl-1 pr-0 group-hover:pr-1 opacity-0 group-hover:opacity-100 transition-all duration-200">{user.name?.split(' ')[0] || user.login}</span>
       </button>
 
       <div className={`absolute top-14 right-0 bg-white border border-neutral-200 rounded-2xl shadow-xl min-w-[200px] overflow-hidden transition-all duration-100 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { createHashRouter, Navigate, useNavigate } from 'react-router-dom';
+import { createHashRouter, Navigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/framework';
 import { useAnalyticsStore, useAuthStore, useCacheStore } from '@/stores';
 import { NotFound } from '@/components/NotFound';
@@ -26,7 +26,6 @@ function AppLoader() {
 }
 
 function AppWrapper({ appName, children }: { appName: string; children: React.ReactNode }) {
-  const navigate = useNavigate();
   const logError = useAnalyticsStore((state) => state.logError);
   const { user, logout } = useAuthStore();
   const { clearCache } = useCacheStore();
@@ -44,13 +43,13 @@ function AppWrapper({ appName, children }: { appName: string; children: React.Re
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
           return;
         }
-        navigate('/gallery', { replace: true });
+        window.location.hash = '#/gallery';
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [navigate]);
+  }, []);
 
   return (
     <>
