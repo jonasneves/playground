@@ -144,63 +144,53 @@
 
   <script>
     const token = window.GitHubAuth.getToken();
-    let apiLoaded = false;
     const LAUNCHER_VERSION = '1.0.0';
+    const REPO_API = 'https://api.github.com/repos/jonasneves/duke-capstone/contents';
 
-    // Register Service Worker
+    const elements = {
+      userAvatar: document.getElementById('userAvatar'),
+      userName: document.getElementById('userName'),
+      loading: document.getElementById('loading'),
+      appGrid: document.getElementById('app-grid'),
+      appFrame: document.getElementById('app-frame'),
+      appLoader: document.getElementById('app-loader'),
+      hint: document.getElementById('hint'),
+      commonStyles: document.getElementById('common-styles')
+    };
+
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registered'))
-        .catch(err => console.warn('Service Worker failed:', err));
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
-    // Preload utilities
-    async function loadGitHubAPI() {
-      if (apiLoaded) return;
-
-      const response = await fetch('https://api.github.com/repos/jonasneves/duke-capstone/contents/shared/utils/github-api.js', {
+    async function loadScript(path) {
+      const response = await fetch(`${REPO_API}/${path}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
       const script = document.createElement('script');
       script.textContent = atob(data.content);
       document.head.appendChild(script);
-      apiLoaded = true;
     }
 
-    async function loadMonitoring() {
-      try {
-        const response = await fetch('https://api.github.com/repos/jonasneves/duke-capstone/contents/shared/utils/monitoring.js', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        const script = document.createElement('script');
-        script.textContent = atob(data.content);
-        document.head.appendChild(script);
-      } catch (e) {
-        console.warn('Could not load monitoring:', e);
-      }
-    }
-
-    // Load common styles
-    fetch('https://api.github.com/repos/jonasneves/duke-capstone/contents/shared/styles/common.css', {
+    fetch(`${REPO_API}/shared/styles/common.css`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(r => r.json())
     .then(data => {
-      document.getElementById('common-styles').href = 'data:text/css;base64,' + data.content;
+      elements.commonStyles.href = 'data:text/css;base64,' + data.content;
     });
 
-    // Load utilities
-    Promise.all([loadGitHubAPI(), loadMonitoring()]).then(init);
+    Promise.all([
+      loadScript('shared/utils/github-api.js'),
+      loadScript('shared/utils/monitoring.js').catch(() => {})
+    ]).then(init);
 
     async function init() {
       const user = window.GitHubAuth.getUser();
-      document.getElementById('userAvatar').src = user.avatar_url;
-      document.getElementById('userName').textContent = user.login;
+      elements.userAvatar.src = user.avatar_url;
+      elements.userName.textContent = user.login;
       window.initRepo(token);
 
-      // Track session start
       if (window.analytics) {
         analytics.track('session_start', { user: user.login });
       }
@@ -214,22 +204,20 @@
         const apps = await repo.listDirectory('apps');
         const directories = apps.filter(a => a.type === 'dir');
 
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('app-grid').style.display = 'grid';
+        elements.loading.style.display = 'none';
+        elements.appGrid.style.display = 'grid';
 
-        // Render placeholder cards first (lazy loading)
         directories.forEach(app => renderPlaceholderCard(app));
 
-        // Load manifests in background
         directories.forEach(async (app, index) => {
-          await new Promise(resolve => setTimeout(resolve, index * 100)); // Stagger requests
+          await new Promise(resolve => setTimeout(resolve, index * 100));
           const manifest = await repo.getManifest(app.path);
           if (manifest) {
             updateCardWithManifest(app.name, manifest, app.path);
           }
         });
       } catch (error) {
-        document.getElementById('loading').innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
+        elements.loading.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
       }
     }
 
@@ -243,7 +231,7 @@
           <p style="color: #ccc;">Loading...</p>
         </div>
       `;
-      document.getElementById('app-grid').appendChild(card);
+      elements.appGrid.appendChild(card);
     }
 
     function updateCardWithManifest(appName, manifest, path) {
@@ -268,81 +256,73 @@
       `;
     }
 
+    function compareVersions(current, required) {
+      const cur = current.split('.').map(Number);
+      const req = required.split('.').map(Number);
+      for (let i = 0; i < 3; i++) {
+        if (cur[i] < req[i]) return -1;
+        if (cur[i] > req[i]) return 1;
+      }
+      return 0;
+    }
+
     function checkVersionCompatibility(manifest) {
       if (!manifest.minLauncherVersion) return null;
-
-      const required = manifest.minLauncherVersion.split('.').map(Number);
-      const current = LAUNCHER_VERSION.split('.').map(Number);
-
-      for (let i = 0; i < 3; i++) {
-        if (current[i] < required[i]) {
-          return `Requires launcher v${manifest.minLauncherVersion}`;
-        }
-        if (current[i] > required[i]) break;
+      if (compareVersions(LAUNCHER_VERSION, manifest.minLauncherVersion) < 0) {
+        return `Requires launcher v${manifest.minLauncherVersion}`;
       }
-
       return null;
     }
 
     async function loadApp(appPath, appName) {
       try {
-        document.getElementById('app-loader').style.display = 'flex';
+        elements.appLoader.style.display = 'flex';
 
-        // Track app launch
         if (window.analytics) {
-          analytics.track('app_launch', { appName: appName, appPath: appPath });
+          analytics.track('app_launch', { appName, appPath });
         }
 
         const file = await repo.getFile(`${appPath}/index.html`);
-        const iframe = document.getElementById('app-frame');
+        const doc = elements.appFrame.contentDocument || elements.appFrame.contentWindow.document;
 
-        // Clear any previous content
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
         doc.open();
         doc.close();
 
-        // Set up onload handler BEFORE writing content
-        iframe.onload = () => {
+        elements.appFrame.onload = () => {
           try {
-            iframe.contentWindow.INJECTED_TOKEN = token;
-            iframe.contentWindow.INJECTED_USER = window.GitHubAuth.getUser();
-            iframe.contentWindow.PARENT_REPO = window.repo;
+            elements.appFrame.contentWindow.INJECTED_TOKEN = token;
+            elements.appFrame.contentWindow.INJECTED_USER = window.GitHubAuth.getUser();
+            elements.appFrame.contentWindow.PARENT_REPO = window.repo;
           } catch (e) {
             console.warn('Could not inject context:', e);
           }
 
-          document.getElementById('app-loader').style.display = 'none';
+          elements.appLoader.style.display = 'none';
           showHint();
         };
 
-        // Write content to iframe
         doc.open();
         doc.write(file.content);
         doc.close();
 
-        // Show iframe
-        iframe.style.display = 'block';
+        elements.appFrame.style.display = 'block';
 
       } catch (error) {
         if (window.errorTracker) {
-          errorTracker.log(error, { context: 'loadApp', appPath: appPath });
+          errorTracker.log(error, { context: 'loadApp', appPath });
         }
         alert(`Error loading app: ${error.message}`);
-        document.getElementById('app-loader').style.display = 'none';
+        elements.appLoader.style.display = 'none';
       }
     }
 
     function setupKeyboardShortcuts() {
       document.addEventListener('keydown', (e) => {
-        const iframe = document.getElementById('app-frame');
+        if (elements.appFrame.style.display !== 'block') return;
 
-        // ESC to close app
-        if (e.key === 'Escape' && iframe.style.display === 'block') {
+        if (e.key === 'Escape') {
           closeApp();
-        }
-
-        // Ctrl+R to refresh (override default in iframe mode)
-        if ((e.ctrlKey || e.metaKey) && e.key === 'r' && iframe.style.display === 'block') {
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
           e.preventDefault();
           location.reload();
         }
@@ -350,25 +330,20 @@
     }
 
     function closeApp() {
-      const iframe = document.getElementById('app-frame');
-      iframe.style.display = 'none';
+      elements.appFrame.style.display = 'none';
+      elements.appFrame.onload = null;
 
-      // Clear iframe content completely
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const doc = elements.appFrame.contentDocument || elements.appFrame.contentWindow.document;
       doc.open();
       doc.write('');
       doc.close();
 
-      // Remove onload handler
-      iframe.onload = null;
-
-      document.getElementById('hint').classList.remove('visible');
+      elements.hint.classList.remove('visible');
     }
 
     function showHint() {
-      const hint = document.getElementById('hint');
-      hint.classList.add('visible');
-      setTimeout(() => hint.classList.remove('visible'), 3000);
+      elements.hint.classList.add('visible');
+      setTimeout(() => elements.hint.classList.remove('visible'), 3000);
     }
 
     function clearAllCache() {
@@ -381,9 +356,6 @@
     function logout() {
       if (confirm('Logout?')) window.GitHubAuth.logout();
     }
-
-    // Make repo globally accessible for apps
-    window.SHARED_REPO = window.repo;
   </script>
 </body>
 </html>

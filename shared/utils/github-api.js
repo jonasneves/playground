@@ -8,35 +8,29 @@ class GitHubRepo {
     this.repo = repo;
     this.token = token;
     this.baseUrl = `https://api.github.com/repos/${owner}/${repo}`;
+    this.cachePrefix = `gh_${owner}_${repo}_`;
     this.cacheTimeout = 300000; // 5 minutes
   }
 
-  getCacheKey(path) {
-    return `gh_${this.owner}_${this.repo}_${path}`;
-  }
-
   getFromCache(path) {
-    try {
-      const cacheKey = this.getCacheKey(path);
-      const cached = localStorage.getItem(cacheKey);
-      if (!cached) return null;
+    const cached = localStorage.getItem(this.cachePrefix + path);
+    if (!cached) return null;
 
+    try {
       const { content, sha, timestamp } = JSON.parse(cached);
       if (Date.now() - timestamp > this.cacheTimeout) {
-        localStorage.removeItem(cacheKey);
+        localStorage.removeItem(this.cachePrefix + path);
         return null;
       }
-
       return { content, sha, path };
-    } catch (e) {
+    } catch {
       return null;
     }
   }
 
   setCache(path, data) {
     try {
-      const cacheKey = this.getCacheKey(path);
-      localStorage.setItem(cacheKey, JSON.stringify({
+      localStorage.setItem(this.cachePrefix + path, JSON.stringify({
         content: data.content,
         sha: data.sha,
         timestamp: Date.now()
@@ -47,28 +41,43 @@ class GitHubRepo {
   }
 
   clearCache() {
-    const prefix = `gh_${this.owner}_${this.repo}_`;
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith(prefix)) localStorage.removeItem(key);
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(this.cachePrefix)) {
+        localStorage.removeItem(key);
+      }
+    }
+  }
+
+  async request(path, options = {}) {
+    const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+      ...options,
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        ...options.headers
+      }
     });
+
+    if (!response.ok) {
+      throw new Error(`Failed to ${options.method || 'fetch'} ${path}: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  encodeContent(content) {
+    return btoa(unescape(encodeURIComponent(content)));
+  }
+
+  invalidateCache(path) {
+    localStorage.removeItem(this.cachePrefix + path);
   }
 
   async getFile(path) {
     const cached = this.getFromCache(path);
     if (cached) return cached;
 
-    const response = await fetch(`${this.baseUrl}/contents/${path}`, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${path}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await this.request(path);
     const result = {
       content: atob(data.content),
       sha: data.sha,
@@ -82,88 +91,54 @@ class GitHubRepo {
   }
 
   async updateFile(path, content, sha, message) {
-    const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+    const result = await this.request(path, {
       method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: message || `Update ${path}`,
-        content: btoa(unescape(encodeURIComponent(content))),
-        sha: sha
+        content: this.encodeContent(content),
+        sha
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to update ${path}: ${response.statusText}`);
-    }
-
-    localStorage.removeItem(this.getCacheKey(path));
-    return response.json();
+    this.invalidateCache(path);
+    return result;
   }
 
   async createFile(path, content, message) {
-    const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+    return this.request(path, {
       method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: message || `Create ${path}`,
-        content: btoa(unescape(encodeURIComponent(content)))
+        content: this.encodeContent(content)
       })
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to create ${path}: ${response.statusText}`);
-    }
-
-    return response.json();
   }
 
   async deleteFile(path, sha, message) {
-    const response = await fetch(`${this.baseUrl}/contents/${path}`, {
+    const result = await this.request(path, {
       method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: message || `Delete ${path}`,
-        sha: sha
+        sha
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete ${path}: ${response.statusText}`);
-    }
-
-    localStorage.removeItem(this.getCacheKey(path));
-    return response.json();
+    this.invalidateCache(path);
+    return result;
   }
 
   async listDirectory(path = '') {
-    const response = await fetch(`${this.baseUrl}/contents/${path}`, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to list ${path}: ${response.statusText}`);
-    }
-
-    return response.json();
+    return this.request(path);
   }
 
   async getManifest(appPath) {
     try {
       const file = await this.getFile(`${appPath}/manifest.json`);
       return JSON.parse(file.content);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
