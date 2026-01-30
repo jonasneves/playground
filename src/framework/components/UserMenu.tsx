@@ -51,7 +51,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
         aria-expanded={isOpen}
-        className="group relative flex items-center gap-2 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full pl-1 pr-1 group-hover:pr-3 hover:bg-white transition-[padding,background-color] duration-300 ease-out shadow-sm"
+        className="group relative flex items-center gap-2 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full py-1 pl-1 pr-1 group-hover:pr-3 hover:bg-white transition-[padding,background-color] duration-300 ease-out shadow-sm"
       >
         {user ? (
           <>
@@ -59,14 +59,14 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
               src={user.avatar_url}
               alt={user.login}
               loading="lazy"
-              className="w-10 h-10 rounded-full ring-2 ring-white flex-shrink-0"
+              className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
             />
             <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out">{user.name?.split(' ')[0] || user.login}</span>
           </>
         ) : (
           <>
-            <div className="w-10 h-10 rounded-full bg-neutral-100 ring-2 ring-white flex items-center justify-center flex-shrink-0">
-              <Github size={20} className="text-neutral-600" />
+            <div className="w-9 h-9 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
+              <Github size={18} className="text-neutral-600" />
             </div>
             <AlertCircle size={14} className="absolute -top-0.5 -right-0.5 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
             <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out">Not logged in</span>
