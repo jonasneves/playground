@@ -51,7 +51,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
         aria-expanded={isOpen}
-        className="group relative flex items-center gap-2 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full py-1 px-1 hover:pr-3 hover:bg-white transition-[padding,background-color] duration-300 ease-out shadow-sm"
+        className="group relative flex items-center bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full py-1 px-1 hover:pr-3 hover:bg-white transition-[padding,background-color] duration-300 ease-out shadow-sm"
       >
         {user ? (
           <>
@@ -61,7 +61,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
               loading="lazy"
               className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
             />
-            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out">{user.name?.split(' ')[0] || user.login}</span>
+            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out ml-2">{user.name?.split(' ')[0] || user.login}</span>
           </>
         ) : (
           <>
@@ -69,7 +69,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
               <Github size={18} className="text-neutral-600" />
             </div>
             <AlertCircle size={14} className="absolute -top-0.5 -right-0.5 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out">Not logged in</span>
+            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out ml-2">Not logged in</span>
           </>
         )}
       </button>
