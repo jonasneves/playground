@@ -1,28 +1,36 @@
 # Playground
 
-An experimental app platform powered by GitHub. Build, iterate, and deploy apps rapidly with GitHub OAuth authentication and API-driven content delivery.
+Experimental app platform for rapidly building and iterating on applications.
 
-## Architecture
+## Features
 
-React-based launcher with lazy-loaded apps. All apps are stored in GitHub and loaded dynamically via the Contents API.
+- **Multi-app launcher** - Access multiple apps from a single interface
+- **Chat** - Conversation with AI models
+- **CMS** - Content editor with live markdown preview
+- **Todo** - Task management
+- **File Browser** - Navigate and explore files
+- **Dashboard** - Overview and analytics
 
-## Constraints
+## Getting Started
 
-- 5,000 API requests/hour per user
-- Static files only (no backend)
-- Designed for 1-10 users
-- Not suitable for public or high-traffic applications
+Visit the live app or run locally:
 
-## Performance
+```bash
+npm install
+npm run dev
+```
 
-First load: 1-2s. Cached load: 100-200ms.
+## Documentation
 
-localStorage cache (5min TTL) reduces API usage by 90%.
+- [Setup Guide](.docs/SETUP.md)
+- [Technical Details](.docs/TECHNICAL.md)
+- [Deployment](.docs/DEPLOYMENT.md)
+- [Framework](.docs/FRAMEWORK.md)
 
-## Debug
+## Development
 
-```javascript
-analytics.getStats()
-errorTracker.getErrors()
-repo.clearCache()
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
 ```
