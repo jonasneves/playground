@@ -1,4 +1,5 @@
 import { useEffect, useRef, useMemo } from 'react';
+import { Bot } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import type { Message } from './types';
 
@@ -47,9 +48,7 @@ export function MessageList({ messages }: MessageListProps) {
       {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-center px-8">
           <div className="w-20 h-20 bg-brand-600/10 rounded-3xl flex items-center justify-center mb-6">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-600">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-            </svg>
+            <Bot size={40} className="text-brand-600" strokeWidth={2} />
           </div>
           <h2 className="text-xl font-bold text-neutral-900 mb-2">AI Chat</h2>
           <p className="text-sm text-neutral-500 max-w-sm">

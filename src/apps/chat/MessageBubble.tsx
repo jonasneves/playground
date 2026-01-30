@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { Bot } from 'lucide-react';
 import type { Message } from './types';
 
 interface MessageBubbleProps {
@@ -21,9 +22,7 @@ export const MessageBubble = memo(({ message, style }: MessageBubbleProps) => {
     return (
       <div style={style} className="flex gap-3" data-role={message.role}>
         <div className="w-8 h-8 rounded-full bg-brand-600/10 flex items-center justify-center flex-shrink-0">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-brand-600">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-          </svg>
+          <Bot size={16} className="text-brand-600" strokeWidth={2.5} />
         </div>
         <div className="px-5 py-3 rounded-2xl rounded-tl-sm bg-white border border-neutral-200 text-neutral-700 text-[15px] leading-relaxed max-w-[85%] shadow-sm">
           {message.content}

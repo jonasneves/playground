@@ -52,7 +52,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
         aria-expanded={isOpen}
-        className="group flex items-center gap-0 group-hover:gap-3 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full p-1 group-hover:pl-1.5 group-hover:pr-6 hover:bg-white transition-all duration-200 shadow-sm overflow-hidden"
+        className="group flex items-center gap-0 group-hover:gap-4 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full p-1 group-hover:pl-2 group-hover:pr-7 hover:bg-white transition-all duration-200 shadow-sm overflow-hidden"
       >
         <img
           src={user.avatar_url}
@@ -60,7 +60,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
           loading="lazy"
           className="w-10 h-10 rounded-full ring-2 ring-white flex-shrink-0"
         />
-        <span className="text-xs font-medium text-neutral-600 whitespace-nowrap w-0 group-hover:w-auto opacity-0 group-hover:opacity-100 transition-all duration-200">{user.name?.split(' ')[0] || user.login}</span>
+        <span className="text-sm font-medium text-neutral-600 whitespace-nowrap w-0 group-hover:w-auto opacity-0 group-hover:opacity-100 transition-all duration-200">{user.name?.split(' ')[0] || user.login}</span>
       </button>
 
       <div className={`absolute top-14 right-0 bg-white border border-neutral-200 rounded-2xl shadow-xl min-w-[200px] overflow-hidden transition-all duration-100 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
