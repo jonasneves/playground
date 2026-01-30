@@ -47,7 +47,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
   if (!user) return null;
 
   return (
-    <div ref={menuRef} className="fixed top-4 right-4 z-50">
+    <div ref={menuRef} className="fixed top-3 right-3 z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
@@ -60,7 +60,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
           loading="lazy"
           className="w-10 h-10 rounded-full ring-2 ring-white flex-shrink-0"
         />
-        <span className="text-xs font-medium text-neutral-600 whitespace-nowrap w-0 group-hover:w-auto opacity-0 group-hover:opacity-100 transition-all duration-200">{user.name || user.login}</span>
+        <span className="text-xs font-medium text-neutral-600 whitespace-nowrap w-0 group-hover:w-auto opacity-0 group-hover:opacity-100 transition-all duration-200">{user.name?.split(' ')[0] || user.login}</span>
       </button>
 
       <div className={`absolute top-14 right-0 bg-white border border-neutral-200 rounded-2xl shadow-xl min-w-[200px] overflow-hidden transition-all duration-100 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
