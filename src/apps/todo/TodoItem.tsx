@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Trash2 } from 'lucide-react';
 import type { Todo } from './types';
 
@@ -7,7 +8,7 @@ interface TodoItemProps {
   onDelete: (id: string) => void;
 }
 
-export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
+export const TodoItem = memo(function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
   return (
     <div className="flex items-center gap-3 p-4 bg-white border border-neutral-200 rounded-xl hover:border-neutral-300 transition-colors group">
       <input
