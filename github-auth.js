@@ -155,7 +155,7 @@
         client_id: this.config.clientId,
         redirect_uri: `${OAUTH_PROXY}/callback`,
         state: state,
-        scope: 'read:user'
+        scope: 'read:user repo'
       });
 
       window.location.href = authUrl;
