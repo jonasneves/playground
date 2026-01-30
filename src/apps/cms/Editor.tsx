@@ -18,8 +18,10 @@ export function Editor({ content, onChange, disabled, placeholder }: EditorProps
   }, [content]);
 
   return (
-    <div className="editor">
-      <h3>Editor</h3>
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <h3 className="px-6 py-3 bg-neutral-50 border-b border-neutral-200 font-medium text-sm text-neutral-700">
+        Editor
+      </h3>
       <textarea
         ref={textareaRef}
         id="editor"
@@ -27,6 +29,7 @@ export function Editor({ content, onChange, disabled, placeholder }: EditorProps
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder={placeholder || 'Select a file to edit...'}
+        className="flex-1 w-full px-6 py-4 font-mono text-sm text-neutral-900 resize-none focus:outline-none disabled:bg-neutral-50 disabled:text-neutral-400"
       />
     </div>
   );

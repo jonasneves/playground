@@ -7,7 +7,6 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { useAuthStore } from '@/stores';
 import type { Message, Model } from './types';
-import './chat.css';
 
 export default function ChatApp() {
   const token = useAuthStore(state => state.token);
@@ -83,10 +82,10 @@ export default function ChatApp() {
   }, [clearMessages]);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <div className="header">
-        <h1>AI Chat</h1>
-        <p>Powered by GitHub Models</p>
+    <div className="h-screen flex flex-col bg-neutral-50">
+      <div className="bg-white border-b border-neutral-200 px-6 py-4">
+        <h1 className="text-2xl font-semibold text-neutral-900">AI Chat</h1>
+        <p className="text-sm text-neutral-600">Powered by GitHub Models</p>
       </div>
 
       <ModelSelector

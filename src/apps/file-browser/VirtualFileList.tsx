@@ -47,7 +47,7 @@ export function VirtualFileList({ files, onNavigate }: VirtualFileListProps) {
   // For lists under 100 items, just render all (no virtualization needed)
   if (files.length < 100) {
     return (
-      <div className="file-list">
+      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
         {files.map((file) => (
           <FileListItem
             key={file.path}
@@ -63,9 +63,9 @@ export function VirtualFileList({ files, onNavigate }: VirtualFileListProps) {
   return (
     <div
       ref={containerRef}
-      className="file-list virtual-scroll"
+      className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-auto"
       onScroll={handleScroll}
-      style={{ height: '600px', overflow: 'auto' }}
+      style={{ height: '600px' }}
     >
       <div style={{ height: totalHeight, position: 'relative' }}>
         {visibleFiles.map((file, index) => {

@@ -57,15 +57,15 @@ export function FileTree({ files, onFileSelect, selectedFile, onLoadDirectory }:
       return (
         <div key={item.path}>
           <div
-            className={`dir-item ${isOpen ? 'open' : ''}`}
+            className="flex items-center gap-2 px-2 py-1.5 hover:bg-neutral-100 cursor-pointer text-sm text-neutral-700 transition-colors"
             style={{ paddingLeft: `${level * 16 + 16}px` }}
             onClick={() => toggleDirectory(item)}
           >
-            <Folder size={16} />
-            {item.name}
+            <Folder size={16} className={isOpen ? 'text-brand-600' : ''} />
+            <span className="font-medium">{item.name}</span>
           </div>
           {isOpen && dirState.children.length > 0 && (
-            <div className="dir-children">
+            <div>
               {dirState.children.map(child => renderItem(child, level + 1))}
             </div>
           )}
@@ -76,12 +76,14 @@ export function FileTree({ files, onFileSelect, selectedFile, onLoadDirectory }:
     return (
       <div
         key={item.path}
-        className={`file-item ${isSelected ? 'active' : ''}`}
+        className={`flex items-center gap-2 px-2 py-1.5 hover:bg-neutral-100 cursor-pointer text-sm transition-colors ${
+          isSelected ? 'bg-brand-50 text-brand-700' : 'text-neutral-600'
+        }`}
         style={{ paddingLeft: `${level * 16 + 16}px` }}
         onClick={() => onFileSelect(item)}
       >
         <FileText size={16} />
-        {item.name}
+        <span>{item.name}</span>
       </div>
     );
   };

@@ -4,7 +4,6 @@ import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { AppConfig } from '@/config/app';
 import type { RepoStats } from './types';
-import './dashboard.css';
 
 export default function Dashboard() {
   const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
@@ -60,14 +59,14 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div>
-        <div className="header">
-          <h1>📊 Dashboard</h1>
-          <p>Repository Statistics</p>
+      <div className="min-h-screen bg-neutral-50">
+        <div className="bg-white border-b border-neutral-200 px-6 py-8 text-center">
+          <h1 className="text-3xl font-semibold text-neutral-900 mb-2">Dashboard</h1>
+          <p className="text-neutral-600">Repository Statistics</p>
         </div>
-        <div className="container">
-          <div className="card">
-            <p style={{ textAlign: 'center', color: '#718096' }}>Loading...</p>
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
+            <p className="text-center text-neutral-500">Loading...</p>
           </div>
         </div>
       </div>
@@ -76,15 +75,18 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div>
-        <div className="header">
-          <h1>📊 Dashboard</h1>
-          <p>Repository Statistics</p>
+      <div className="min-h-screen bg-neutral-50">
+        <div className="bg-white border-b border-neutral-200 px-6 py-8 text-center">
+          <h1 className="text-3xl font-semibold text-neutral-900 mb-2">Dashboard</h1>
+          <p className="text-neutral-600">Repository Statistics</p>
         </div>
-        <div className="container">
-          <div className="card">
-            <p style={{ color: '#ef4444' }}>Error: {error}</p>
-            <button className="btn" onClick={loadStats} style={{ marginTop: '16px' }}>
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
+            <p className="text-red-600 mb-4">Error: {error}</p>
+            <button
+              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-sm transition-colors"
+              onClick={loadStats}
+            >
               Retry
             </button>
           </div>
@@ -94,26 +96,29 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <div className="header">
-        <h1>📊 Dashboard</h1>
-        <p>Repository Statistics</p>
+    <div className="min-h-screen bg-neutral-50">
+      <div className="bg-white border-b border-neutral-200 px-6 py-8 text-center">
+        <h1 className="text-3xl font-semibold text-neutral-900 mb-2">Dashboard</h1>
+        <p className="text-neutral-600">Repository Statistics</p>
       </div>
 
-      <div className="container">
-        <div className="grid">
+      <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatCard title="Applications" value={stats?.appCount || 0} />
           <StatCard title="Shared Utilities" value={stats?.utilCount || 0} />
           <StatCard title="Root Files" value={stats?.fileCount || 0} />
         </div>
 
-        <div className="card">
-          <h3>Recent Activity</h3>
-          <p>{activityMessage}</p>
+        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-neutral-900 mb-2">Recent Activity</h3>
+          <p className="text-sm text-neutral-600 leading-relaxed">{activityMessage}</p>
         </div>
 
-        <div style={{ textAlign: 'center' }}>
-          <button className="btn" onClick={handleBack}>
+        <div className="text-center">
+          <button
+            className="px-5 py-2.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg font-medium text-sm transition-colors"
+            onClick={handleBack}
+          >
             ← Back to Gallery
           </button>
         </div>

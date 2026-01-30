@@ -7,7 +7,6 @@ import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { AppConfig } from '@/config/app';
 import type { FileNode, FileData } from './types';
-import './cms.css';
 
 export default function CMSApp() {
   const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
@@ -110,30 +109,35 @@ export default function CMSApp() {
   const isMarkdown = currentFile?.path.endsWith('.md') || false;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <div className="header">
-        <h2>Content Manager</h2>
-        <div style={{ display: 'flex', gap: '8px' }}>
+    <div className="flex flex-col h-screen bg-neutral-50">
+      <div className="bg-white border-b border-neutral-200 px-6 py-4 flex items-center justify-between">
+        <h2 className="text-2xl font-semibold text-neutral-900">Content Manager</h2>
+        <div className="flex items-center gap-2">
           <button
-            className="btn btn-success"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-sm transition-colors disabled:bg-neutral-300 disabled:cursor-not-allowed"
             onClick={handleSave}
             disabled={!isDirty || isSaving}
           >
             <Save size={16} />
             {isSaving ? 'Saving...' : 'Save'}
           </button>
-          <button className="btn" onClick={handleClose}>
+          <button
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg font-medium text-sm transition-colors"
+            onClick={handleClose}
+          >
             <X size={16} />
             Close
           </button>
         </div>
       </div>
 
-      <div className="main">
-        <div className="sidebar">
-          <div className="sidebar-header">Repository Files</div>
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-64 bg-white border-r border-neutral-200 overflow-y-auto">
+          <div className="px-4 py-3 bg-neutral-50 border-b border-neutral-200 font-medium text-sm text-neutral-700">
+            Repository Files
+          </div>
           {isLoading ? (
-            <div style={{ padding: '20px', textAlign: 'center', color: '#9ca3af' }}>
+            <div className="p-5 text-center text-neutral-400">
               Loading...
             </div>
           ) : (
@@ -146,7 +150,7 @@ export default function CMSApp() {
           )}
         </div>
 
-        <div className="editor-area">
+        <div className="flex flex-1 overflow-hidden">
           <Editor
             content={content}
             onChange={handleContentChange}
