@@ -4,8 +4,8 @@
 
 https://github.com/settings/developers → New OAuth App
 
-- Application name: Duke Capstone
-- Homepage URL: `https://capstone.neevs.io`
+- Application name: Playground
+- Homepage URL: `https://playground.neevs.io`
 - Authorization callback URL: `https://oauth.neevs.io/callback`
 
 Copy Client ID and Client Secret.
@@ -26,7 +26,7 @@ git push origin main
 ## Architecture
 
 ```
-capstone.neevs.io → github-auth.js → oauth.neevs.io → GitHub OAuth
+playground.neevs.io → github-auth.js → oauth.neevs.io → GitHub OAuth
 ```
 
 Branches:
