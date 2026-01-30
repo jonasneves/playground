@@ -16,6 +16,33 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
     }
   }, [disabled]);
 
+  // Auto-focus input when user starts typing
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Don't interfere if input is already focused
+      if (document.activeElement === inputRef.current) return;
+
+      // Don't interfere if disabled
+      if (disabled) return;
+
+      // Don't interfere with modifier keys (except Shift for capitals)
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      // Don't interfere with special keys
+      if (e.key.length > 1 && e.key !== 'Space') return;
+
+      // Don't interfere if user is typing in another input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      // Focus input and let the character be typed naturally
+      inputRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', handleGlobalKeyDown);
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [disabled]);
+
   const handleSend = () => {
     const trimmed = input.trim();
     if (!trimmed || disabled) return;
