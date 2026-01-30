@@ -1,36 +1,51 @@
-.PHONY: help dev build preview analyze install clean commit push
+.PHONY: help install dev preview build analyze commit push deploy clean
 
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "Development"
+	@echo "  \033[36minstall\033[0m      Install dependencies"
+	@echo "  \033[36mdev\033[0m          Start development server"
+	@echo "  \033[36mpreview\033[0m      Preview production build"
+	@echo ""
+	@echo "Build"
+	@echo "  \033[36mbuild\033[0m        Build for production"
+	@echo "  \033[36manalyze\033[0m      Analyze bundle size"
+	@echo "  \033[36mdeploy\033[0m       Build and deploy to GitHub Pages"
+	@echo ""
+	@echo "Git"
+	@echo "  \033[36mcommit\033[0m       Commit all changes (prompts for message)"
+	@echo "  \033[36mpush\033[0m         Push to remote"
+	@echo ""
+	@echo "Maintenance"
+	@echo "  \033[36mclean\033[0m        Remove build artifacts and node_modules"
+	@echo ""
 
-install: ## Install dependencies
+install:
 	npm install
 
-dev: ## Start development server
-	@lsof -ti:5173 | xargs kill -9 2>/dev/null || true
+dev:
 	npm run dev
 
-build: ## Build for production
-	npm run build
-
-preview: ## Preview production build
-	@lsof -ti:4173 | xargs kill -9 2>/dev/null || true
+preview:
 	npm run preview
 
-analyze: ## Analyze bundle size
+build:
+	npm run build
+
+analyze:
 	npm run analyze
 
-clean: ## Remove build artifacts and node_modules
-	rm -rf dist node_modules
-
-commit: ## Commit all changes (prompts for message)
-	@read -p "Commit message: " msg; \
-	git add -A && git commit -m "$$msg"
-
-push: ## Push to remote
-	git push
-
-deploy: build ## Build and push (triggers GitHub Pages deploy)
+deploy: build
 	git add dist -f
 	git commit -m "Deploy" || true
 	git push
+
+commit:
+	@read -p "Commit message: " msg; \
+	git add -A && git commit -m "$$msg"
+
+push:
+	git push
+
+clean:
+	rm -rf dist node_modules
