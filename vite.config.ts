@@ -21,9 +21,7 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index-react.html')
-      },
+      input: path.resolve(__dirname, 'index.html'),
       output: {
         manualChunks: (id) => {
           // Group by node_modules
