@@ -2,8 +2,6 @@
 
 Experimental app platform for rapidly building and iterating on applications.
 
-Live: [playground.neevs.io](https://playground.neevs.io)
-
 ## Getting Started
 
 ```bash
