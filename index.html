@@ -92,7 +92,7 @@
     <div id="app-grid" class="grid" style="display: none;"></div>
   </div>
 
-  <div id="app-container" style="display: none;"></div>
+  <iframe id="app-frame" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; border:none; z-index:1000;"></iframe>
 
   <script>
     const token = window.GitHubAuth.getToken();
@@ -159,30 +159,15 @@
     async function loadApp(appPath) {
       try {
         const file = await repo.getFile(`${appPath}/index.html`);
+        const iframe = document.getElementById('app-frame');
 
-        // Hide gallery, show app container
-        document.getElementById('gallery').style.display = 'none';
-        document.querySelector('.user-bar').style.display = 'none';
-        document.querySelector('.header').style.display = 'none';
-
-        const container = document.getElementById('app-container');
-        container.style.display = 'block';
-        container.innerHTML = file.content;
-
-        // Execute scripts
-        const scripts = container.getElementsByTagName('script');
-        for (let script of scripts) {
-          const newScript = document.createElement('script');
-          if (script.src) {
-            newScript.src = script.src;
-          } else {
-            newScript.textContent = script.textContent;
-          }
-          document.body.appendChild(newScript);
-        }
+        iframe.style.display = 'block';
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(file.content);
+        doc.close();
       } catch (error) {
         alert(`Error loading app: ${error.message}`);
-        location.reload();
       }
     }
 
