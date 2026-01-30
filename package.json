@@ -4,13 +4,14 @@
   "description": "Experimental app platform for rapidly building and iterating on applications",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "npm run registry && tsc && vite build",
     "preview": "vite preview",
     "analyze": "vite build --mode analyze",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx",
     "lint:fix": "eslint . --ext ts,tsx --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
+    "registry": "node scripts/generate-registry.js"
   },
   "repository": {
     "type": "git",

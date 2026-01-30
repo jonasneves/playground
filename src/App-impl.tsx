@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { OAuth, AppShell } from '@/framework';
 import { useAuthStore, useCacheStore, useAnalyticsStore } from '@/stores';
-import { useGitHubAPI } from '@/hooks';
 import { AppConfig } from '@/config/app';
 
 function App() {
@@ -22,7 +21,6 @@ function App() {
         config={AppConfig}
         user={user}
         token={token}
-        useGitHubAPI={useGitHubAPI}
         onLogout={logout}
         onClearCache={() => clearCache(AppConfig.repository.owner, AppConfig.repository.name)}
         onTrack={track}

@@ -8,17 +8,10 @@ interface AppShellProps {
   config: FrameworkConfig;
   user: User | null;
   token: string | null;
-  useGitHubAPI: (owner: string, repo: string) => any;
   onLogout: () => void;
   onClearCache: () => void;
   onTrack?: (event: string, data?: Record<string, any>) => void;
   onNavigate?: (route: string) => void;
-}
-
-interface AppDirectory {
-  name: string;
-  path: string;
-  type: 'file' | 'dir';
 }
 
 interface AppData {
@@ -30,7 +23,6 @@ interface AppData {
 export function AppShell({
   config,
   user,
-  useGitHubAPI,
   onLogout,
   onClearCache,
   onTrack,
@@ -40,8 +32,6 @@ export function AppShell({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const api = useGitHubAPI(config.repository.owner, config.repository.name);
-
   useEffect(() => {
     loadApps();
   }, []);
@@ -49,29 +39,22 @@ export function AppShell({
   const loadApps = async () => {
     try {
       setLoading(true);
-      const directories = await api.listDirectory('apps');
-      const appDirs = directories.filter((d: AppDirectory) => d.type === 'dir');
 
-      const appData: AppData[] = appDirs.map((app: AppDirectory) => ({
+      // Fetch apps registry (single API call instead of 7+)
+      const response = await fetch('/apps-registry.json');
+      if (!response.ok) {
+        throw new Error('Failed to load apps registry');
+      }
+
+      const registry = await response.json();
+
+      const appData: AppData[] = registry.apps.map((app: any) => ({
         name: app.name,
         path: app.path,
-        manifest: null
+        manifest: app.manifest
       }));
+
       setApps(appData);
-
-      // Load all manifests in parallel for better performance
-      const manifestPromises = appDirs.map(async (dir: AppDirectory) => {
-        const manifest = await api.getManifest(dir.path);
-        return { name: dir.name, manifest };
-      });
-
-      const manifestResults = await Promise.all(manifestPromises);
-
-      setApps(prev => prev.map(app => {
-        const result = manifestResults.find(r => r.name === app.name);
-        return result?.manifest ? { ...app, manifest: result.manifest } : app;
-      }));
-
       setLoading(false);
     } catch (err: any) {
       setError(err.message);

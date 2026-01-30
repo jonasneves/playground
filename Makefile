@@ -9,6 +9,7 @@ help: ## Show this help
 	@echo "  \033[36mtype-check\033[0m   Run TypeScript type checking"
 	@echo ""
 	@echo "Build"
+	@echo "  \033[36mregistry\033[0m     Generate apps registry"
 	@echo "  \033[36mbuild\033[0m        Build for production"
 	@echo "  \033[36manalyze\033[0m      Analyze bundle size"
 	@echo "  \033[36mdeploy\033[0m       Build and deploy to GitHub Pages"
@@ -36,6 +37,9 @@ preview:
 
 type-check:
 	npm run type-check
+
+registry:
+	npm run registry
 
 build:
 	npm run build
