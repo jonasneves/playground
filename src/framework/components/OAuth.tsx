@@ -29,6 +29,7 @@ export function OAuth({
 }: OAuthProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [authInitialized, setAuthInitialized] = useState(false);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -93,12 +94,31 @@ export function OAuth({
           }
         }
       });
+      setAuthInitialized(true);
       setIsLoading(false);
     } else {
       // Not authenticated and no callback - show landing page
       setIsLoading(false);
     }
   }, [scriptLoaded, onAuthChange]);
+
+  const handleLogin = () => {
+    if (!authInitialized && window.GitHubAuth) {
+      window.GitHubAuth.init({
+        scope: 'repo',
+        onLogin: (token: string) => {
+          const user = window.GitHubAuth.getUser();
+          if (user) {
+            setTimeout(() => {
+              onAuthChange(token, user);
+            }, 0);
+          }
+        }
+      });
+      setAuthInitialized(true);
+    }
+    window.GitHubAuth.login();
+  };
 
   if (isLoading) {
     return (
@@ -158,7 +178,7 @@ export function OAuth({
             </div>
 
             <button
-              onClick={() => window.GitHubAuth.login()}
+              onClick={handleLogin}
               className="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
