@@ -20,13 +20,6 @@ npm install
 npm run dev
 ```
 
-## Documentation
-
-- [Setup Guide](.docs/SETUP.md)
-- [Technical Details](.docs/TECHNICAL.md)
-- [Deployment](.docs/DEPLOYMENT.md)
-- [Framework](.docs/FRAMEWORK.md)
-
 ## Development
 
 ```bash
