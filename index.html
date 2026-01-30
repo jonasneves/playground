@@ -84,13 +84,15 @@
     <p>Your private collection of experimental applications</p>
   </div>
 
-  <div class="container">
+  <div id="gallery" class="container">
     <div id="loading" class="loading">
       <div class="spinner"></div>
       <p>Loading applications...</p>
     </div>
     <div id="app-grid" class="grid" style="display: none;"></div>
   </div>
+
+  <div id="app-container" style="display: none;"></div>
 
   <script>
     const token = window.GitHubAuth.getToken();
@@ -157,9 +159,18 @@
     async function loadApp(appPath) {
       try {
         const file = await repo.getFile(`${appPath}/index.html`);
-        document.body.innerHTML = file.content;
 
-        const scripts = document.body.getElementsByTagName('script');
+        // Hide gallery, show app container
+        document.getElementById('gallery').style.display = 'none';
+        document.querySelector('.user-bar').style.display = 'none';
+        document.querySelector('.header').style.display = 'none';
+
+        const container = document.getElementById('app-container');
+        container.style.display = 'block';
+        container.innerHTML = file.content;
+
+        // Execute scripts
+        const scripts = container.getElementsByTagName('script');
         for (let script of scripts) {
           const newScript = document.createElement('script');
           if (script.src) {
@@ -171,6 +182,7 @@
         }
       } catch (error) {
         alert(`Error loading app: ${error.message}`);
+        location.reload();
       }
     }
 
