@@ -2,12 +2,9 @@
   "name": "duke-capstone",
   "version": "1.0.0",
   "description": "A private prototype gallery powered by GitHub Pages and GitHub API. All content is protected behind GitHub OAuth with repository-level access control.",
-  "main": "launcher-config.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:framework": "tsc && vite build --config vite.config.framework.ts",
-    "build:all": "npm run build && npm run build:framework",
     "preview": "vite preview",
     "analyze": "vite build --mode analyze"
   },
