@@ -3,10 +3,13 @@ import { StatCard } from './StatCard';
 import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { AppConfig } from '@/config/app';
+import { useRepositoryStore } from '@/stores';
 import type { RepoStats } from './types';
 
 export default function Dashboard() {
-  const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
+  const { repository } = useRepositoryStore();
+  const currentRepo = repository || AppConfig.repository;
+  const api = useGitHubAPI(currentRepo.owner, currentRepo.name);
   const { startTimer, endTimer } = usePerformanceMonitor('dashboard');
   const [stats, setStats] = useState<RepoStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);

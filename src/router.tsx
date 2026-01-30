@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { createHashRouter, Navigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/framework';
-import { useAnalyticsStore, useAuthStore, useCacheStore } from '@/stores';
+import { useAnalyticsStore, useAuthStore, useCacheStore, useRepositoryStore } from '@/stores';
 import { NotFound } from '@/components/NotFound';
 import { UserMenu } from '@/framework/components/UserMenu';
 import { AppConfig } from '@/config/app';
@@ -29,9 +29,12 @@ function AppWrapper({ appName, children }: { appName: string; children: React.Re
   const logError = useAnalyticsStore((state) => state.logError);
   const { user, logout } = useAuthStore();
   const { clearCache } = useCacheStore();
+  const { repository } = useRepositoryStore();
+
+  const currentRepo = repository || AppConfig.repository;
 
   const handleClearCache = () => {
-    clearCache(AppConfig.repository.owner, AppConfig.repository.name);
+    clearCache(currentRepo.owner, currentRepo.name);
   };
 
   // ESC key to go back to gallery

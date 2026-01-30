@@ -4,11 +4,14 @@ import { VirtualFileList } from './VirtualFileList';
 import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { AppConfig } from '@/config/app';
+import { useRepositoryStore } from '@/stores';
 import { sortFiles } from './utils';
 import type { FileItem } from './types';
 
 export default function FileBrowser() {
-  const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
+  const { repository } = useRepositoryStore();
+  const currentRepo = repository || AppConfig.repository;
+  const api = useGitHubAPI(currentRepo.owner, currentRepo.name);
   const { startTimer, endTimer } = usePerformanceMonitor('file-browser');
   const [currentPath, setCurrentPath] = useState('');
   const [files, setFiles] = useState<FileItem[]>([]);

@@ -6,6 +6,21 @@ export const AppConfig = {
     name: 'playground'
   },
 
+  getRepository: () => {
+    const stored = localStorage.getItem('repository-storage');
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.state?.repository) {
+          return data.state.repository;
+        }
+      } catch (e) {
+        // Fallback to default
+      }
+    }
+    return AppConfig.repository;
+  },
+
   branding: {
     title: 'Playground',
     subtitle: 'Launch and experiment with apps',

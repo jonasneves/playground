@@ -7,11 +7,14 @@ import { Preview } from './Preview';
 import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { AppConfig } from '@/config/app';
+import { useRepositoryStore } from '@/stores';
 import type { FileNode, FileData } from './types';
 
 export default function CMSApp() {
   const navigate = useNavigate();
-  const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
+  const { repository } = useRepositoryStore();
+  const currentRepo = repository || AppConfig.repository;
+  const api = useGitHubAPI(currentRepo.owner, currentRepo.name);
   const { startTimer, endTimer } = usePerformanceMonitor('cms');
   const [rootFiles, setRootFiles] = useState<FileNode[]>([]);
   const [currentFile, setCurrentFile] = useState<FileData | null>(null);

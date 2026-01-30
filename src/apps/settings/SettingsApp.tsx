@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings as SettingsIcon, GitBranch, Package } from 'lucide-react';
-import { useAuthStore, useCacheStore, useAnalyticsStore } from '@/stores';
+import { useAuthStore, useCacheStore, useAnalyticsStore, useRepositoryStore } from '@/stores';
 import { AppConfig } from '@/config/app';
+import { RepositorySelector } from '@/framework';
 
 function SettingCard({ children, title }: { children: React.ReactNode; title: string }) {
   return (
@@ -68,6 +69,10 @@ export default function SettingsApp() {
   const { user, logout } = useAuthStore();
   const { clearCache } = useCacheStore();
   const { metrics } = useAnalyticsStore();
+  const { repository, setRepository } = useRepositoryStore();
+  const [showRepoSelector, setShowRepoSelector] = useState(false);
+
+  const currentRepo = repository || AppConfig.repository;
 
   const handleLogout = () => {
     if (confirm('Are you sure you want to log out?')) {
@@ -78,7 +83,7 @@ export default function SettingsApp() {
 
   const handleClearCache = () => {
     if (confirm('Clear all cached data? This will reload the page.')) {
-      clearCache(AppConfig.repository.owner, AppConfig.repository.name);
+      clearCache(currentRepo.owner, currentRepo.name);
       window.location.reload();
     }
   };
@@ -105,6 +110,18 @@ export default function SettingsApp() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      {showRepoSelector && (
+        <RepositorySelector
+          onSelect={(repo) => {
+            setRepository(repo);
+            setShowRepoSelector(false);
+            window.location.reload();
+          }}
+          currentRepository={repository}
+          userLogin={user?.login}
+        />
+      )}
+
       <div className="bg-white border-b border-neutral-200 px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-brand-100 rounded-xl flex items-center justify-center">
@@ -141,11 +158,18 @@ export default function SettingsApp() {
         <SettingCard title="Repository">
           <SettingRow
             label={<span className="flex items-center gap-2"><Package size={14} />Owner</span> as any}
-            value={AppConfig.repository.owner}
+            value={currentRepo.owner}
           />
           <SettingRow
             label={<span className="flex items-center gap-2"><GitBranch size={14} />Repository</span> as any}
-            value={AppConfig.repository.name}
+            value={currentRepo.name}
+          />
+          <SettingRow
+            label="Change Repository"
+            action={{
+              label: 'Edit',
+              onClick: () => setShowRepoSelector(true)
+            }}
           />
           <SettingRow
             label="Version"
