@@ -2,9 +2,9 @@
 
 Experimental app platform for rapidly building and iterating on applications.
 
-## Getting Started
+Live: [playground.neevs.io](https://playground.neevs.io)
 
-Visit the live app or run locally:
+## Getting Started
 
 ```bash
 npm install
@@ -18,3 +18,5 @@ npm run dev      # Start development server
 npm run build    # Build for production
 npm run preview  # Preview production build
 ```
+
+For additional commands see `make help`
