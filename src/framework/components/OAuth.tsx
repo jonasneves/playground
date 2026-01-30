@@ -64,6 +64,10 @@ export function OAuth({
   useEffect(() => {
     if (!scriptLoaded) return;
 
+    // Check if we're handling an OAuth callback (returning from GitHub)
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasOAuthCallback = urlParams.has('code') || urlParams.has('state');
+
     if (window.GitHubAuth.isAuthenticated()) {
       const user = window.GitHubAuth.getUser();
       const token = window.GitHubAuth.getToken();
@@ -74,7 +78,8 @@ export function OAuth({
           setIsLoading(false);
         }, 0);
       }
-    } else {
+    } else if (hasOAuthCallback) {
+      // Only initialize if we're processing an OAuth callback
       window.GitHubAuth.init({
         scope: 'repo',
         onLogin: (token: string) => {
@@ -88,6 +93,9 @@ export function OAuth({
           }
         }
       });
+      setIsLoading(false);
+    } else {
+      // Not authenticated and no callback - show landing page
       setIsLoading(false);
     }
   }, [scriptLoaded, onAuthChange]);
