@@ -50,7 +50,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
         aria-expanded={isOpen}
-        className="group flex items-center gap-3 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full p-1 hover:px-4 hover:py-2 hover:bg-white transition-all duration-300 shadow-sm overflow-hidden w-10 h-10 hover:w-auto hover:h-auto"
+        className="group flex items-center gap-0 group-hover:gap-3 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full px-2 py-2 group-hover:pr-4 hover:bg-white transition-all duration-300 shadow-sm overflow-hidden"
       >
         <img
           src={user.avatar_url}
@@ -58,7 +58,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
           loading="lazy"
           className="w-8 h-8 rounded-full ring-2 ring-white flex-shrink-0"
         />
-        <span className="text-sm font-medium text-neutral-900 whitespace-nowrap opacity-0 w-0 group-hover:opacity-100 group-hover:w-auto transition-all duration-300">{user.name || user.login}</span>
+        <span className="text-sm font-medium text-neutral-900 whitespace-nowrap max-w-0 group-hover:max-w-xs opacity-0 group-hover:opacity-100 transition-all duration-300">{user.name || user.login}</span>
       </button>
 
       <div className={`absolute top-14 right-0 bg-white border border-neutral-200 rounded-2xl shadow-xl min-w-[200px] overflow-hidden transition-all duration-200 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
