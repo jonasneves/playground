@@ -1,7 +1,8 @@
 {
   "name": "AI Chat",
   "description": "Chat with AI models using GitHub Models API",
-  "version": "1.0.0",
-  "tech": ["Vanilla JS", "GitHub Models"],
-  "minLauncherVersion": "1.0.0"
+  "version": "2.0.0",
+  "tech": ["React", "TypeScript", "RAF Batching"],
+  "minLauncherVersion": "1.0.0",
+  "reactRoute": "/apps/chat"
 }

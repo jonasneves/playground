@@ -1,10 +1,11 @@
 {
-  "name": "Simple Dashboard",
+  "name": "Dashboard",
   "slug": "dashboard",
-  "description": "Example dashboard showing repository stats and recent activity",
-  "version": "1.0.0",
-  "tech": ["Vanilla JS"],
+  "description": "Repository statistics with memoized computed values",
+  "version": "2.0.0",
+  "tech": ["React", "TypeScript", "useMemo"],
   "entry": "index.html",
   "status": "active",
-  "lastUpdated": "2026-01-30"
+  "lastUpdated": "2026-01-30",
+  "reactRoute": "/apps/dashboard"
 }

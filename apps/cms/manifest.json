@@ -1,10 +1,11 @@
 {
   "name": "Content Manager",
   "slug": "cms",
-  "description": "Edit markdown files and manage content directly in the repository",
-  "version": "1.0.0",
-  "tech": ["Vanilla JS", "Marked.js"],
+  "description": "Edit markdown files with live preview powered by Web Workers",
+  "version": "2.0.0",
+  "tech": ["React", "TypeScript", "Web Workers", "Debouncing"],
   "entry": "index.html",
   "status": "active",
-  "lastUpdated": "2026-01-30"
+  "lastUpdated": "2026-01-30",
+  "reactRoute": "/apps/cms"
 }
