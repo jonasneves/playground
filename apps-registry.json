@@ -1,0 +1,111 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-01-30T17:15:58.305Z",
+  "apps": [
+    {
+      "path": "apps/chat",
+      "name": "chat",
+      "manifest": {
+        "name": "AI Chat",
+        "description": "Chat with AI models using GitHub Models API",
+        "version": "2.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "RAF Batching"
+        ],
+        "minLauncherVersion": "1.0.0",
+        "reactRoute": "/apps/chat"
+      }
+    },
+    {
+      "path": "apps/cms",
+      "name": "cms",
+      "manifest": {
+        "name": "Content Manager",
+        "slug": "cms",
+        "description": "Edit markdown files with live preview powered by Web Workers",
+        "version": "2.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "Web Workers",
+          "Debouncing"
+        ],
+        "entry": "index.html",
+        "status": "active",
+        "lastUpdated": "2026-01-30",
+        "reactRoute": "/apps/cms"
+      }
+    },
+    {
+      "path": "apps/dashboard",
+      "name": "dashboard",
+      "manifest": {
+        "name": "Dashboard",
+        "slug": "dashboard",
+        "description": "Repository statistics with memoized computed values",
+        "version": "2.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "useMemo"
+        ],
+        "entry": "index.html",
+        "status": "active",
+        "lastUpdated": "2026-01-30",
+        "reactRoute": "/apps/dashboard"
+      }
+    },
+    {
+      "path": "apps/file-browser",
+      "name": "file-browser",
+      "manifest": {
+        "name": "File Browser",
+        "slug": "file-browser",
+        "description": "Browse repository files with virtual scrolling for large directories",
+        "version": "2.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "Virtual Scrolling"
+        ],
+        "entry": "index.html",
+        "status": "active",
+        "lastUpdated": "2026-01-30",
+        "reactRoute": "/apps/file-browser"
+      }
+    },
+    {
+      "path": "apps/settings",
+      "name": "settings",
+      "manifest": {
+        "name": "Settings",
+        "description": "User preferences and repository information",
+        "version": "1.0.0",
+        "tech": [
+          "React",
+          "TypeScript"
+        ],
+        "minLauncherVersion": "1.0.0",
+        "reactRoute": "/settings"
+      }
+    },
+    {
+      "path": "apps/todo",
+      "name": "todo",
+      "manifest": {
+        "name": "Todo App",
+        "description": "Task management with pill-toggle filtering",
+        "version": "1.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "localStorage"
+        ],
+        "minLauncherVersion": "1.0.0",
+        "reactRoute": "/apps/todo"
+      }
+    }
+  ]
+}
