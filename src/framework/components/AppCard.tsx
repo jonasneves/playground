@@ -27,10 +27,10 @@ function checkVersionCompatibility(manifest: AppManifest | null, currentVersion?
 export function AppCard({ appName, manifest, path, onLaunch, version }: AppCardProps) {
   if (!manifest) {
     return (
-      <div className="app-card">
-        <div className="app-card-body">
-          <h3>{appName}</h3>
-          <p style={{ color: '#ccc' }}>Loading...</p>
+      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+        <div className="p-6">
+          <h3 className="text-xl font-semibold text-neutral-900 mb-2">{appName}</h3>
+          <p className="text-neutral-400">Loading...</p>
         </div>
       </div>
     );
@@ -39,44 +39,42 @@ export function AppCard({ appName, manifest, path, onLaunch, version }: AppCardP
   const versionWarning = checkVersionCompatibility(manifest, version);
 
   return (
-    <div className="app-card">
+    <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
       {manifest.thumbnail && (
         <img
           src={manifest.thumbnail}
           alt={manifest.name}
+          className="w-full h-48 object-cover"
           onError={(e) => { e.currentTarget.style.display = 'none'; }}
         />
       )}
-      <div className="app-card-body">
-        <h3>{manifest.name}</h3>
-        <p>{manifest.description}</p>
+      <div className="p-6">
+        <h3 className="text-xl font-semibold text-neutral-900 mb-2">{manifest.name}</h3>
+        <p className="text-neutral-600 text-sm leading-relaxed mb-4">{manifest.description}</p>
 
         {versionWarning && (
-          <div style={{
-            color: '#f59e0b',
-            fontSize: '13px',
-            marginBottom: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <AlertCircle size={16} /> {versionWarning}
+          <div className="flex items-center gap-2 text-amber-600 text-xs mb-4 bg-amber-50 px-3 py-2 rounded-lg">
+            <AlertCircle size={14} />
+            {versionWarning}
           </div>
         )}
 
         {manifest.tech && manifest.tech.length > 0 && (
-          <div className="app-meta">
+          <div className="flex flex-wrap gap-2 mb-4">
             {manifest.tech.map(t => (
-              <span key={t} className="badge">{t}</span>
+              <span key={t} className="bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-xs font-medium">
+                {t}
+              </span>
             ))}
           </div>
         )}
 
         <button
           onClick={() => onLaunch(path, manifest.name)}
-          className="launch-btn"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group-hover:gap-3"
         >
-          Launch App <ArrowRight size={16} />
+          Launch App
+          <ArrowRight size={16} className="transition-transform duration-200" />
         </button>
       </div>
     </div>

@@ -33,29 +33,38 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
   if (!user) return null;
 
   return (
-    <div ref={menuRef} style={{ position: 'relative' }}>
-      <div
-        className="user-pill"
+    <div ref={menuRef} className="fixed top-6 right-6 z-50">
+      <button
         onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-3 bg-white/80 backdrop-blur-md border border-neutral-200 rounded-full px-4 py-2 hover:bg-white transition-all duration-200 shadow-sm"
       >
         <img
           src={user.avatar_url}
           alt={user.login}
-          className="user-avatar"
+          className="w-8 h-8 rounded-full ring-2 ring-white"
         />
-        <span style={{ fontWeight: 500, fontSize: '14px' }}>
-          {user.name || user.login}
-        </span>
-      </div>
+        <span className="text-sm font-medium text-neutral-900">{user.name || user.login}</span>
+      </button>
 
-      <div className={`user-menu ${isOpen ? 'show' : ''}`}>
-        <button onClick={() => window.location.reload()}>
+      <div className={`absolute top-14 right-0 bg-white border border-neutral-200 rounded-2xl shadow-xl min-w-[200px] overflow-hidden transition-all duration-200 ${isOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
+        <button
+          onClick={() => window.location.reload()}
+          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+        >
           <RefreshCw size={16} /> Refresh
         </button>
-        <button onClick={handleClearCache}>
+
+        <button
+          onClick={handleClearCache}
+          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors border-t border-neutral-100"
+        >
           <Trash2 size={16} /> Clear Cache
         </button>
-        <button onClick={onLogout}>
+
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-neutral-100"
+        >
           <LogOut size={16} /> Logout
         </button>
       </div>

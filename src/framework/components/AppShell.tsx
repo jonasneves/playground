@@ -152,42 +152,26 @@ export function AppShell({
 
   if (loading && apps.length === 0) {
     return (
-      <div>
+      <div className="relative min-h-screen">
+        <div className="fixed top-[70%] left-[75%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] rounded-full bg-brand-500 blur-[100px] sm:blur-[150px] opacity-40 animate-breathe pointer-events-none" />
         <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
-        <div style={{
-          background: `linear-gradient(135deg, ${config.branding.theme.primary} 0%, ${config.branding.theme.secondary} 100%)`,
-          color: 'white',
-          padding: '48px 20px',
-          textAlign: 'center',
-          marginBottom: '48px'
-        }}>
-          <h1 style={{
-            margin: '0 0 8px 0',
-            fontSize: '2.5em',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px'
-          }}>
-            <Rocket size={32} /> {config.branding.title}
-          </h1>
-          <p style={{ margin: 0, opacity: 0.95, fontSize: '1.05em' }}>
-            {config.branding.subtitle}
-          </p>
-        </div>
-        <div className="loading">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              border: '4px solid rgba(255,255,255,0.3)',
-              borderRadius: '50%',
-              borderTopColor: 'white',
-              width: '50px',
-              height: '50px',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 20px'
-            }} />
-            <p>Loading applications...</p>
+
+        <div className="relative z-10">
+          <header className="py-16 sm:py-24 text-center">
+            <h1 className="text-4xl sm:text-5xl font-semibold text-neutral-900 flex items-center justify-center gap-3 mb-3">
+              <Rocket className="text-brand-600" size={40} />
+              {config.branding.title}
+            </h1>
+            <p className="text-lg text-neutral-600 max-w-2xl mx-auto px-4">
+              {config.branding.subtitle}
+            </p>
+          </header>
+
+          <div className="flex justify-center items-center py-20">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-neutral-200 border-t-brand-600 rounded-full animate-[spin_1s_linear_infinite]" />
+              <p className="text-neutral-600">Loading applications...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -196,81 +180,68 @@ export function AppShell({
 
   if (error) {
     return (
-      <div>
+      <div className="relative min-h-screen">
         <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
-        <div className="error">
-          <strong>Error:</strong> {error}
+        <div className="container py-8">
+          <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-6">
+            <strong className="font-semibold">Error:</strong> {error}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="relative min-h-screen">
+      <div className="fixed top-[70%] left-[75%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] rounded-full bg-brand-500 blur-[100px] sm:blur-[150px] opacity-40 animate-breathe pointer-events-none" />
+
       <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
 
-      <div style={{
-        background: `linear-gradient(135deg, ${config.branding.theme.primary} 0%, ${config.branding.theme.secondary} 100%)`,
-        color: 'white',
-        padding: '48px 20px',
-        textAlign: 'center',
-        marginBottom: '48px'
-      }}>
-        <h1 style={{
-          margin: '0 0 8px 0',
-          fontSize: '2.5em',
-          fontWeight: 600,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px'
-        }}>
-          <Rocket size={32} /> {config.branding.title}
-        </h1>
-        <p style={{ margin: 0, opacity: 0.95, fontSize: '1.05em' }}>
-          {config.branding.subtitle}
-        </p>
-      </div>
+      <div className="relative z-10">
+        <header className="py-16 sm:py-24 text-center">
+          <h1 className="text-4xl sm:text-5xl font-semibold text-neutral-900 flex items-center justify-center gap-3 mb-3">
+            <Rocket className="text-brand-600" size={40} />
+            {config.branding.title}
+          </h1>
+          <p className="text-lg text-neutral-600 max-w-2xl mx-auto px-4">
+            {config.branding.subtitle}
+          </p>
+        </header>
 
-      <div className="app-grid">
-        {apps.map(app => (
-          <AppCard
-            key={app.name}
-            appName={app.name}
-            manifest={app.manifest}
-            path={app.path}
-            onLaunch={loadApp}
-          />
-        ))}
+        <div className="container pb-20">
+          <div className="grid">
+            {apps.map(app => (
+              <AppCard
+                key={app.name}
+                appName={app.name}
+                manifest={app.manifest}
+                path={app.path}
+                onLaunch={loadApp}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {currentApp && (
         <>
           <iframe
             ref={iframeRef}
-            className="app-frame"
+            className="fixed inset-0 w-full h-full border-0 z-[9998]"
             style={{ display: 'block' }}
             title={currentApp.name}
           />
 
           {appLoading && (
-            <div className="app-loader" style={{ display: 'flex' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{
-                  border: '4px solid rgba(255,255,255,0.3)',
-                  borderRadius: '50%',
-                  borderTopColor: 'white',
-                  width: '50px',
-                  height: '50px',
-                  animation: 'spin 1s linear infinite',
-                  margin: '0 auto 20px'
-                }} />
-                <p>Loading app...</p>
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999]">
+              <div className="flex flex-col items-center gap-4 text-white">
+                <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-[spin_1s_linear_infinite]" />
+                <p className="text-lg">Loading app...</p>
               </div>
             </div>
           )}
 
-          <div className={`hint ${showHint ? 'visible' : ''}`}>
+          <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/90 text-white px-6 py-3 rounded-full text-sm flex items-center gap-2 transition-all duration-300 z-[10000] ${showHint ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
             Press ESC to return to gallery
           </div>
         </>
