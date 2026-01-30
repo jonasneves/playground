@@ -32,6 +32,17 @@ export function OAuth({
   const [authInitialized, setAuthInitialized] = useState(false);
 
   useEffect(() => {
+    // Check if we're handling an OAuth callback or already have auth
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasOAuthCallback = urlParams.has('code') || urlParams.has('state');
+    const hasStoredAuth = localStorage.getItem('github_token');
+
+    // Only load script if we need it (callback or existing auth)
+    if (!hasOAuthCallback && !hasStoredAuth) {
+      setIsLoading(false);
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = `${oauthServiceUrl}/github-auth.js?v=${Date.now()}`;
     script.async = true;
@@ -103,21 +114,50 @@ export function OAuth({
   }, [scriptLoaded, onAuthChange]);
 
   const handleLogin = () => {
-    if (!authInitialized && window.GitHubAuth) {
-      window.GitHubAuth.init({
-        scope: 'repo',
-        onLogin: (token: string) => {
-          const user = window.GitHubAuth.getUser();
-          if (user) {
-            setTimeout(() => {
-              onAuthChange(token, user);
-            }, 0);
+    if (!scriptLoaded) {
+      // Load script on-demand when user clicks login
+      setIsLoading(true);
+      const script = document.createElement('script');
+      script.src = `${oauthServiceUrl}/github-auth.js?v=${Date.now()}`;
+      script.async = true;
+
+      script.onload = () => {
+        setTimeout(() => {
+          if (window.GitHubAuth) {
+            window.GitHubAuth.init({
+              scope: 'repo',
+              onLogin: (token: string) => {
+                const user = window.GitHubAuth.getUser();
+                if (user) {
+                  setTimeout(() => {
+                    onAuthChange(token, user);
+                  }, 0);
+                }
+              }
+            });
+            window.GitHubAuth.login();
           }
-        }
-      });
-      setAuthInitialized(true);
+        }, 100);
+      };
+
+      document.head.appendChild(script);
+    } else {
+      if (!authInitialized && window.GitHubAuth) {
+        window.GitHubAuth.init({
+          scope: 'repo',
+          onLogin: (token: string) => {
+            const user = window.GitHubAuth.getUser();
+            if (user) {
+              setTimeout(() => {
+                onAuthChange(token, user);
+              }, 0);
+            }
+          }
+        });
+        setAuthInitialized(true);
+      }
+      window.GitHubAuth.login();
     }
-    window.GitHubAuth.login();
   };
 
   if (isLoading) {
