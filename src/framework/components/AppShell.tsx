@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Rocket } from 'lucide-react';
 import { AppCard } from './AppCard';
 import { UserMenu } from './UserMenu';
@@ -30,7 +30,6 @@ interface AppData {
 export function AppShell({
   config,
   user,
-  token,
   useGitHubAPI,
   onLogout,
   onClearCache,
@@ -40,37 +39,11 @@ export function AppShell({
   const [apps, setApps] = useState<AppData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentApp, setCurrentApp] = useState<{ path: string; name: string } | null>(null);
-  const [appLoading, setAppLoading] = useState(false);
-  const [showHint, setShowHint] = useState(false);
 
   const api = useGitHubAPI(config.repository.owner, config.repository.name);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     loadApps();
-  }, []);
-
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && currentApp) {
-        closeApp();
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentApp]);
-
-  useEffect(() => {
-    function handleMessage(e: MessageEvent) {
-      if (e.data === 'close-app') {
-        closeApp();
-      }
-    }
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
   const loadApps = async () => {
@@ -103,52 +76,14 @@ export function AppShell({
     }
   };
 
-  const loadApp = useCallback(async (appPath: string, appName: string) => {
-    try {
-      setAppLoading(true);
-      onTrack?.('app_launch', { appName, appPath });
+  const loadApp = useCallback((appPath: string, appName: string) => {
+    onTrack?.('app_launch', { appName, appPath });
 
-      // Check if this app has a React route
-      const manifest = apps.find(app => app.path === appPath)?.manifest;
-      if (manifest?.reactRoute && onNavigate) {
-        onNavigate(manifest.reactRoute);
-        setAppLoading(false);
-        return;
-      }
-
-      setCurrentApp({ path: appPath, name: appName });
-      const file = await api.getFile(`${appPath}/index.html`);
-
-      const injectionScript = `<script>
-        window.INJECTED_TOKEN = ${JSON.stringify(token)};
-        window.INJECTED_USER = ${JSON.stringify(user)};
-        window.PARENT_REPO = window.parent.repo;
-      </script>`;
-
-      const htmlWithInjection = file.content.replace('<head>', '<head>' + injectionScript);
-
-      if (iframeRef.current) {
-        iframeRef.current.srcdoc = htmlWithInjection;
-        iframeRef.current.onload = () => {
-          setAppLoading(false);
-          setShowHint(true);
-          setTimeout(() => setShowHint(false), 3000);
-        };
-      }
-    } catch (err: any) {
-      alert(`Error loading app: ${err.message}`);
-      setAppLoading(false);
-      setCurrentApp(null);
+    const manifest = apps.find(app => app.path === appPath)?.manifest;
+    if (manifest?.reactRoute && onNavigate) {
+      onNavigate(manifest.reactRoute);
     }
-  }, [api, token, user, onTrack, apps, onNavigate]);
-
-  const closeApp = useCallback(() => {
-    setCurrentApp(null);
-    setShowHint(false);
-    if (iframeRef.current) {
-      iframeRef.current.srcdoc = '';
-    }
-  }, []);
+  }, [apps, onTrack, onNavigate]);
 
   if (loading && apps.length === 0) {
     return (
@@ -222,30 +157,6 @@ export function AppShell({
           </div>
         </div>
       </div>
-
-      {currentApp && (
-        <>
-          <iframe
-            ref={iframeRef}
-            className="fixed inset-0 w-full h-full border-0 z-[9998]"
-            style={{ display: 'block' }}
-            title={currentApp.name}
-          />
-
-          {appLoading && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999]">
-              <div className="flex flex-col items-center gap-4 text-white">
-                <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-[spin_1s_linear_infinite]" />
-                <p className="text-lg">Loading app...</p>
-              </div>
-            </div>
-          )}
-
-          <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/90 text-white px-6 py-3 rounded-full text-sm flex items-center gap-2 transition-all duration-300 z-[10000] ${showHint ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-            Press ESC to return to gallery
-          </div>
-        </>
-      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { StatCard } from './StatCard';
 import { useGitHubAPI } from '@/hooks';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
@@ -6,6 +7,7 @@ import { AppConfig } from '@/config/app';
 import type { RepoStats } from './types';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
   const { startTimer, endTimer } = usePerformanceMonitor('dashboard');
   const [stats, setStats] = useState<RepoStats | null>(null);
@@ -54,7 +56,7 @@ export default function Dashboard() {
     `Repository contains ${stats.appCount} apps, ${stats.utilCount} shared modules, and ${stats.fileCount} root files. Last checked: ${stats.lastChecked.toLocaleString()}`;
 
   const handleBack = () => {
-    window.parent.postMessage('close-app', '*');
+    navigate('/');
   };
 
   if (isLoading) {

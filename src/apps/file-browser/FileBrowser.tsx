@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Breadcrumb } from './Breadcrumb';
 import { VirtualFileList } from './VirtualFileList';
 import { useGitHubAPI } from '@/hooks';
@@ -8,6 +9,7 @@ import { sortFiles } from './utils';
 import type { FileItem } from './types';
 
 export default function FileBrowser() {
+  const navigate = useNavigate();
   const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
   const { startTimer, endTimer } = usePerformanceMonitor('file-browser');
   const [currentPath, setCurrentPath] = useState('');
@@ -42,7 +44,7 @@ export default function FileBrowser() {
   }, []);
 
   const handleBack = () => {
-    window.parent.postMessage('close-app', '*');
+    navigate('/');
   };
 
   if (isLoading && files.length === 0) {

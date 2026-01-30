@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
 import { FileTree } from './FileTree';
 import { Editor } from './Editor';
@@ -9,6 +10,7 @@ import { AppConfig } from '@/config/app';
 import type { FileNode, FileData } from './types';
 
 export default function CMSApp() {
+  const navigate = useNavigate();
   const api = useGitHubAPI(AppConfig.repository.owner, AppConfig.repository.name);
   const { startTimer, endTimer } = usePerformanceMonitor('cms');
   const [rootFiles, setRootFiles] = useState<FileNode[]>([]);
@@ -103,7 +105,7 @@ export default function CMSApp() {
         return;
       }
     }
-    window.parent.postMessage('close-app', '*');
+    navigate('/');
   };
 
   const isMarkdown = currentFile?.path.endsWith('.md') || false;
