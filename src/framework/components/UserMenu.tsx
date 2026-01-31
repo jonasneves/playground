@@ -61,7 +61,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
               loading="lazy"
               className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
             />
-            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out ml-2">{user.name?.split(' ')[0] || user.login}</span>
+            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out group-hover:ml-2">{user.name?.split(' ')[0] || user.login}</span>
           </>
         ) : (
           <>
@@ -69,7 +69,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
               <Github size={18} className="text-neutral-600" />
             </div>
             <AlertCircle size={14} className="absolute -top-0.5 -right-0.5 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out ml-2">Not logged in</span>
+            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out group-hover:ml-2">Not logged in</span>
           </>
         )}
       </button>
