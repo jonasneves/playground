@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { createHashRouter, Navigate } from 'react-router-dom';
+import { createHashRouter, Navigate, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/framework';
 import { useAnalyticsStore, useAuthStore, useCacheStore, useRepositoryStore } from '@/stores';
 import { NotFound } from '@/components/NotFound';
@@ -26,6 +26,7 @@ function AppLoader() {
 }
 
 function AppWrapper({ appName, children }: { appName: string; children: React.ReactNode }) {
+  const navigate = useNavigate();
   const logError = useAnalyticsStore((state) => state.logError);
   const { user, logout } = useAuthStore();
   const { clearCache } = useCacheStore();
@@ -46,14 +47,13 @@ function AppWrapper({ appName, children }: { appName: string; children: React.Re
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
           return;
         }
-        // Use href to force full page reload (fixes chat app state issue)
-        window.location.href = window.location.href.split('#')[0] + '#/gallery';
+        navigate('/gallery', { replace: true });
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [navigate]);
 
   return (
     <>
