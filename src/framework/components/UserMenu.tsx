@@ -23,9 +23,21 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
       }
     }
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
+      };
+    }
+  }, [isOpen]);
 
   const handleClearCache = () => {
     if (confirm('Clear all cached data? Apps will reload from the repository.')) {
@@ -45,7 +57,7 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
   };
 
   return (
-    <div ref={menuRef} className="fixed top-3 right-3 z-50">
+    <div ref={menuRef} className="fixed top-4 right-6 z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open user menu"
@@ -60,7 +72,10 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
               loading="lazy"
               className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
             />
-            <span className="text-sm font-medium text-neutral-600 whitespace-nowrap max-w-0 group-hover:max-w-[120px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out group-hover:ml-2">{user.name?.split(' ')[0] || user.login}</span>
+            <div className="flex flex-col max-w-0 group-hover:max-w-[150px] overflow-hidden opacity-0 group-hover:opacity-100 transition-[max-width,opacity] duration-300 ease-out group-hover:ml-2">
+              <span className="text-sm font-medium text-neutral-900 whitespace-nowrap leading-tight">{user.name || user.login}</span>
+              <span className="text-xs text-neutral-500 whitespace-nowrap leading-tight">@{user.login}</span>
+            </div>
           </>
         ) : (
           <>
