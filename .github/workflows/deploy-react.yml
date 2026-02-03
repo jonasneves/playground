@@ -6,39 +6,59 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build-deploy:
     runs-on: ubuntu-slim
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm ci
 
       - name: Build React app
         run: npm run build
-        # For custom domain: uses base: '/' (default)
-        # For repo-based GH Pages: set VITE_BASE_PATH=/playground/
-        # env:
-        #   VITE_BASE_PATH: /playground/
 
-      - name: Prepare deployment directory
+      - name: Add CNAME for custom domain
         run: |
-          mkdir -p deploy
-          cp -r dist/* deploy/
-          if [ -f CNAME ]; then cp CNAME deploy/; fi
+          if [ -f CNAME ]; then
+            cp CNAME dist/
+          fi
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./deploy
-          cname: neevs.io
+          path: ./dist
+
+      - id: deployment
+        name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+
+  report-build-status:
+    runs-on: ubuntu-slim
+    needs: build-deploy
+    if: always()
+    steps:
+      - name: Report build status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONCLUSION: ${{ needs.build-deploy.result }}
+        run: |
+          gh api -X POST "repos/$GITHUB_REPOSITORY/pages/telemetry" \
+            -F github_run_id="$GITHUB_RUN_ID" \
+            -F conclusion="$CONCLUSION"
