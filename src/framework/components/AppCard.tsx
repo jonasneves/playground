@@ -1,14 +1,28 @@
+import type { ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
 import type { AppManifest } from '../types';
+
+function highlightText(text: string, searchTerm: string): ReactNode {
+  if (!searchTerm) return text;
+
+  const parts = text.split(new RegExp(`(${searchTerm})`, 'gi'));
+  return parts.map((part, i) =>
+    part.toLowerCase() === searchTerm.toLowerCase()
+      ? <mark key={i} className="bg-yellow-200 text-neutral-900">{part}</mark>
+      : part
+  );
+}
 
 interface AppCardProps {
   appName: string;
   manifest: AppManifest | null;
   path: string;
   onLaunch: (path: string, name: string) => void;
+  isSelected?: boolean;
+  searchTerm?: string;
 }
 
-export function AppCard({ appName, manifest, path, onLaunch }: AppCardProps) {
+export function AppCard({ appName, manifest, path, onLaunch, isSelected = false, searchTerm = '' }: AppCardProps) {
   if (!manifest) {
     return (
       <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
@@ -21,7 +35,7 @@ export function AppCard({ appName, manifest, path, onLaunch }: AppCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 overflow-hidden group flex flex-col h-full">
+    <div className={`bg-white rounded-xl border ${isSelected ? 'border-brand-500 ring-2 ring-brand-200' : 'border-neutral-200'} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 overflow-hidden group flex flex-col h-full`}>
       <div className={`w-full bg-gradient-to-br from-brand-50 to-neutral-50 flex items-center justify-center ${manifest.thumbnail ? 'h-32' : 'h-20'}`}>
         {manifest.thumbnail ? (
           <img
@@ -37,8 +51,8 @@ export function AppCard({ appName, manifest, path, onLaunch }: AppCardProps) {
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <h3 className="text-base font-semibold text-neutral-900 mb-1">{manifest.name}</h3>
-        <p className="text-neutral-600 text-xs leading-relaxed mb-3 line-clamp-2">{manifest.description}</p>
+        <h3 className="text-base font-semibold text-neutral-900 mb-1">{highlightText(manifest.name, searchTerm)}</h3>
+        <p className="text-neutral-600 text-xs leading-relaxed mb-3 line-clamp-2">{highlightText(manifest.description || '', searchTerm)}</p>
 
         {manifest.tech && manifest.tech.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">

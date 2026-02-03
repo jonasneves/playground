@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Rocket, Search } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Rocket, Search, X } from 'lucide-react';
 import { AppCard } from './AppCard';
 import { UserMenu } from './UserMenu';
 import { PillToggle } from './PillToggle';
@@ -21,13 +21,68 @@ const BackgroundGlow = () => (
   <div className="fixed top-[70%] left-[75%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] rounded-full bg-brand-500 blur-[100px] sm:blur-[150px] opacity-40 animate-breathe pointer-events-none" />
 );
 
+const SkeletonCard = () => (
+  <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden animate-pulse">
+    <div className="w-full h-20 bg-gradient-to-br from-neutral-100 to-neutral-50" />
+    <div className="p-4">
+      <div className="h-4 bg-neutral-200 rounded w-3/4 mb-2" />
+      <div className="h-3 bg-neutral-200 rounded w-full mb-1" />
+      <div className="h-3 bg-neutral-200 rounded w-2/3 mb-3" />
+      <div className="flex gap-1.5 mb-3">
+        <div className="h-5 bg-neutral-200 rounded-full w-12" />
+        <div className="h-5 bg-neutral-200 rounded-full w-16" />
+      </div>
+      <div className="h-8 bg-neutral-200 rounded-lg w-full" />
+    </div>
+  </div>
+);
+
+const ShortcutsDialog = ({ onClose }: { onClose: () => void }) => (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+    <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <h2 className="text-xl font-semibold text-neutral-900 mb-4">Keyboard Shortcuts</h2>
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <span className="text-neutral-600">Start typing</span>
+          <kbd className="bg-neutral-100 text-neutral-900 px-2 py-1 rounded text-sm font-mono">Any key</kbd>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-neutral-600">Clear search</span>
+          <kbd className="bg-neutral-100 text-neutral-900 px-2 py-1 rounded text-sm font-mono">Esc</kbd>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-neutral-600">Navigate apps</span>
+          <div className="flex gap-1">
+            <kbd className="bg-neutral-100 text-neutral-900 px-2 py-1 rounded text-sm font-mono">↑</kbd>
+            <kbd className="bg-neutral-100 text-neutral-900 px-2 py-1 rounded text-sm font-mono">↓</kbd>
+          </div>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-neutral-600">Launch app</span>
+          <kbd className="bg-neutral-100 text-neutral-900 px-2 py-1 rounded text-sm font-mono">Enter</kbd>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-neutral-600">Show shortcuts</span>
+          <kbd className="bg-neutral-100 text-neutral-900 px-2 py-1 rounded text-sm font-mono">?</kbd>
+        </div>
+      </div>
+      <button
+        onClick={onClose}
+        className="mt-6 w-full bg-brand-600 hover:bg-brand-700 text-white py-2 rounded-lg font-medium transition-colors"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+);
+
 const Header = ({ title, subtitle }: { title: string; subtitle: string }) => (
-  <header className="py-16 sm:py-24 text-center">
-    <h1 className="text-4xl sm:text-5xl font-semibold text-neutral-900 flex items-center justify-center gap-3 mb-3">
-      <Rocket className="text-brand-600" size={40} />
+  <header className="pt-6 pb-8">
+    <h1 className="text-2xl font-semibold text-neutral-900 flex items-center gap-2 mb-1">
+      <Rocket className="text-brand-600" size={24} />
       {title}
     </h1>
-    <p className="text-lg text-neutral-600 max-w-2xl mx-auto px-4">
+    <p className="text-sm text-neutral-600">
       {subtitle}
     </p>
   </header>
@@ -48,6 +103,12 @@ interface AppData {
   manifest: AppManifest | null;
 }
 
+interface AppsRegistry {
+  version: string;
+  generated: string;
+  apps: AppData[];
+}
+
 export function AppShell({
   config,
   user,
@@ -61,6 +122,10 @@ export function AppShell({
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [recentApps, setRecentApps] = useState<string[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,7 +135,7 @@ export function AppShell({
         if (!response.ok) {
           throw new Error('Failed to load apps registry');
         }
-        const registry = await response.json();
+        const registry: AppsRegistry = await response.json();
         setApps(registry.apps);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -79,12 +144,110 @@ export function AppShell({
       }
     }
     loadApps();
+    const stored = localStorage.getItem('recentApps');
+    if (stored) {
+      setRecentApps(JSON.parse(stored));
+    }
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setSelectedAppIndex(-1);
+  }, [debouncedSearch, filter]);
+
+  const handleAppLaunch = useCallback((appPath: string, appName: string) => {
+    onTrack?.('app_launch', { appName, appPath });
+    const manifest = apps.find(app => app.path === appPath)?.manifest;
+    if (manifest?.reactRoute && onNavigate) {
+      onNavigate(manifest.reactRoute);
+    }
+
+    const updated = [appName, ...recentApps.filter(name => name !== appName)].slice(0, 5);
+    setRecentApps(updated);
+    localStorage.setItem('recentApps', JSON.stringify(updated));
+  }, [apps, onTrack, onNavigate, recentApps]);
+
+  function handleClearSearch(): void {
+    setSearchQuery('');
+    searchInputRef.current?.focus();
+  }
+
+  const filteredApps = (() => {
+    const filtered = apps.filter(app => {
+      const category = APP_CATEGORIES[app.name];
+      const matchesCategory = filter === 'all' || category === filter;
+
+      if (!debouncedSearch) return matchesCategory;
+
+      const query = debouncedSearch.toLowerCase();
+      const matchesSearch =
+        app.name.toLowerCase().includes(query) ||
+        app.manifest?.description?.toLowerCase().includes(query);
+
+      return matchesCategory && matchesSearch;
+    });
+
+    if (!debouncedSearch && recentApps.length > 0) {
+      return filtered.sort((a, b) => {
+        const aIndex = recentApps.indexOf(a.name);
+        const bIndex = recentApps.indexOf(b.name);
+        if (aIndex === -1 && bIndex === -1) return 0;
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        return aIndex - bIndex;
+      });
+    }
+
+    return filtered;
+  })();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement;
       const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+      if (e.key === 'Escape') {
+        if (showShortcuts) {
+          setShowShortcuts(false);
+          return;
+        }
+        if (isInputFocused) {
+          setSearchQuery('');
+          searchInputRef.current?.blur();
+          setSelectedAppIndex(-1);
+          return;
+        }
+      }
+
+      if (e.key === '?' && !isInputFocused && !e.shiftKey) {
+        setShowShortcuts(true);
+        return;
+      }
+
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !isInputFocused) {
+        e.preventDefault();
+        setSelectedAppIndex(prev => {
+          if (e.key === 'ArrowDown') {
+            return prev < filteredApps.length - 1 ? prev + 1 : prev;
+          } else {
+            return prev > 0 ? prev - 1 : -1;
+          }
+        });
+        return;
+      }
+
+      if (e.key === 'Enter' && selectedAppIndex >= 0 && !isInputFocused) {
+        e.preventDefault();
+        const app = filteredApps[selectedAppIndex];
+        if (app) {
+          handleAppLaunch(app.path, app.name);
+        }
+        return;
+      }
 
       if (!isInputFocused && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         searchInputRef.current?.focus();
@@ -93,44 +256,22 @@ export function AppShell({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  function handleAppLaunch(appPath: string, appName: string) {
-    onTrack?.('app_launch', { appName, appPath });
-    const manifest = apps.find(app => app.path === appPath)?.manifest;
-    if (manifest?.reactRoute && onNavigate) {
-      onNavigate(manifest.reactRoute);
-    }
-  }
-
-  const filteredApps = apps.filter(app => {
-    const category = APP_CATEGORIES[app.name];
-    const matchesCategory = filter === 'all' || category === filter;
-
-    if (!searchQuery) return matchesCategory;
-
-    const query = searchQuery.toLowerCase();
-    const manifest = app.manifest;
-
-    const matchesSearch =
-      app.name.toLowerCase().includes(query) ||
-      manifest?.description?.toLowerCase().includes(query);
-
-    return matchesCategory && matchesSearch;
-  });
+  }, [showShortcuts, selectedAppIndex, filteredApps, handleAppLaunch]);
 
   if (loading && apps.length === 0) {
     return (
       <div className="relative min-h-screen">
         <BackgroundGlow />
         <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
-        <div className="relative z-10">
+        <div className="relative z-10 container pt-4 pb-20">
           <Header title={config.branding.title} subtitle={config.branding.subtitle} />
-          <div className="flex justify-center items-center py-20">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-neutral-200 border-t-brand-600 rounded-full animate-[spin_1s_linear_infinite]" />
-              <p className="text-neutral-600">Loading applications...</p>
-            </div>
+          <div className="mb-8 flex justify-center">
+            <div className="h-12 bg-neutral-100 rounded-xl w-full max-w-md animate-pulse" />
+          </div>
+          <div className="grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         </div>
       </div>
@@ -154,20 +295,29 @@ export function AppShell({
     <div className="relative min-h-screen">
       <BackgroundGlow />
       <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
-      <div className="relative z-10">
+      <div className="relative z-10 container pt-4 pb-20">
         <Header title={config.branding.title} subtitle={config.branding.subtitle} />
-        <div className="container pb-20">
-          <div className="flex flex-col items-center gap-6 mb-8">
+        <div className="flex flex-col items-center gap-6 mb-8">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search apps..."
+                placeholder="Type to search apps..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white border border-neutral-200 rounded-xl text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+                aria-label="Search apps"
+                className="w-full pl-12 pr-10 py-3 bg-white border border-neutral-200 rounded-xl text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
               />
+              {searchQuery && (
+                <button
+                  onClick={handleClearSearch}
+                  aria-label="Clear search"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              )}
             </div>
 
             <PillToggle
@@ -181,27 +331,51 @@ export function AppShell({
             />
           </div>
 
-          <div className="grid">
-            {filteredApps.map(app => (
+          <div className="mb-4 flex items-center justify-between" role="region" aria-live="polite" aria-atomic="true">
+            <p className="text-sm text-neutral-600">
+              {filteredApps.length} {filteredApps.length === 1 ? 'app' : 'apps'}
+            </p>
+            {!debouncedSearch && recentApps.length > 0 && (
+              <p className="text-xs text-neutral-500">Recently used apps shown first</p>
+            )}
+          </div>
+
+          <div className="grid" role="region" aria-label="Applications">
+            {filteredApps.map((app, index) => (
               <AppCard
                 key={app.name}
                 appName={app.name}
                 manifest={app.manifest}
                 path={app.path}
                 onLaunch={handleAppLaunch}
+                isSelected={index === selectedAppIndex}
+                searchTerm={debouncedSearch}
               />
             ))}
           </div>
 
-          {filteredApps.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-neutral-500">
-                {searchQuery ? 'No apps match your search' : 'No apps in this category'}
-              </p>
-            </div>
-          )}
-        </div>
+        {filteredApps.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-neutral-600 text-lg mb-2">No apps found</p>
+            <p className="text-neutral-500 text-sm">
+              {debouncedSearch ? (
+                <>
+                  Try adjusting your search or{' '}
+                  <button
+                    onClick={() => setFilter('all')}
+                    className="text-brand-600 hover:text-brand-700 underline"
+                  >
+                    view all categories
+                  </button>
+                </>
+              ) : (
+                'No apps in this category'
+              )}
+            </p>
+          </div>
+        )}
       </div>
+      {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
     </div>
   );
 }
