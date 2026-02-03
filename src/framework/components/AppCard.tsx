@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lock } from 'lucide-react';
 import type { AppManifest } from '../types';
 
 function highlightText(text: string, searchTerm: string): ReactNode {
@@ -20,9 +20,10 @@ interface AppCardProps {
   onLaunch: (path: string, name: string) => void;
   isSelected?: boolean;
   searchTerm?: string;
+  isLocked?: boolean;
 }
 
-export function AppCard({ appName, manifest, path, onLaunch, isSelected = false, searchTerm = '' }: AppCardProps) {
+export function AppCard({ appName, manifest, path, onLaunch, isSelected = false, searchTerm = '', isLocked = false }: AppCardProps) {
   if (!manifest) {
     return (
       <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
@@ -35,8 +36,13 @@ export function AppCard({ appName, manifest, path, onLaunch, isSelected = false,
   }
 
   return (
-    <div className={`bg-white rounded-xl border ${isSelected ? 'border-brand-500 ring-2 ring-brand-200' : 'border-neutral-200'} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 overflow-hidden group flex flex-col h-full`}>
-      <div className={`w-full bg-gradient-to-br from-brand-50 to-neutral-50 flex items-center justify-center ${manifest.thumbnail ? 'h-32' : 'h-20'}`}>
+    <div className={`bg-white rounded-xl border ${isSelected ? 'border-brand-500 ring-2 ring-brand-200' : 'border-neutral-200'} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 overflow-hidden group flex flex-col h-full ${isLocked ? 'opacity-60' : ''}`}>
+      <div className={`w-full bg-gradient-to-br from-brand-50 to-neutral-50 flex items-center justify-center ${manifest.thumbnail ? 'h-32' : 'h-20'} relative`}>
+        {isLocked && (
+          <div className="absolute inset-0 bg-black/10 flex items-center justify-center backdrop-blur-[1px]">
+            <Lock size={24} className="text-neutral-600" />
+          </div>
+        )}
         {manifest.thumbnail ? (
           <img
             src={manifest.thumbnail}
@@ -65,12 +71,26 @@ export function AppCard({ appName, manifest, path, onLaunch, isSelected = false,
         )}
 
         <button
-          onClick={() => onLaunch(path, manifest.name)}
-          aria-label={`Launch ${manifest.name} app`}
-          className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white px-3 py-2 rounded-lg font-medium text-xs transition-all duration-150 group-hover:gap-2 mt-auto"
+          onClick={() => !isLocked && onLaunch(path, manifest.name)}
+          aria-label={isLocked ? 'Sign in to launch app' : `Launch ${manifest.name} app`}
+          disabled={isLocked}
+          className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-medium text-xs transition-all duration-150 mt-auto ${
+            isLocked
+              ? 'bg-neutral-200 text-neutral-600 cursor-not-allowed'
+              : 'bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white group-hover:gap-2'
+          }`}
         >
-          Launch App
-          <ArrowRight size={14} className="transition-transform duration-150" />
+          {isLocked ? (
+            <>
+              <Lock size={14} />
+              Sign in to launch
+            </>
+          ) : (
+            <>
+              Launch App
+              <ArrowRight size={14} className="transition-transform duration-150" />
+            </>
+          )}
         </button>
       </div>
     </div>

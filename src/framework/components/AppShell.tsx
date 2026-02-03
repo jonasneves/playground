@@ -91,6 +91,7 @@ const Header = ({ title, subtitle }: { title: string; subtitle: string }) => (
 interface AppShellProps {
   config: FrameworkConfig;
   user: User | null;
+  onLogin: () => void;
   onLogout: () => void;
   onClearCache: () => void;
   onTrack?: (event: string, data?: Record<string, any>) => void;
@@ -112,6 +113,7 @@ interface AppsRegistry {
 export function AppShell({
   config,
   user,
+  onLogin,
   onLogout,
   onClearCache,
   onTrack,
@@ -262,7 +264,7 @@ export function AppShell({
     return (
       <div className="relative min-h-screen">
         <BackgroundGlow />
-        <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
+        <UserMenu user={user} onLogin={onLogin} onLogout={onLogout} onClearCache={onClearCache} />
         <div className="relative z-10 container pt-4 pb-20">
           <Header title={config.branding.title} subtitle={config.branding.subtitle} />
           <div className="mb-8 flex justify-center">
@@ -281,7 +283,7 @@ export function AppShell({
   if (error) {
     return (
       <div className="relative min-h-screen">
-        <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
+        <UserMenu user={user} onLogin={onLogin} onLogout={onLogout} onClearCache={onClearCache} />
         <div className="container py-8">
           <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-6">
             <strong className="font-semibold">Error:</strong> {error}
@@ -352,6 +354,7 @@ export function AppShell({
                 onLaunch={handleAppLaunch}
                 isSelected={index === selectedAppIndex}
                 searchTerm={debouncedSearch}
+                isLocked={!user}
               />
             ))}
           </div>

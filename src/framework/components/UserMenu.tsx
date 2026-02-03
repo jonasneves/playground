@@ -6,11 +6,12 @@ import type { User } from '../types';
 
 interface UserMenuProps {
   user: User | null;
+  onLogin: () => void;
   onLogout: () => void;
   onClearCache: () => void;
 }
 
-export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
+export function UserMenu({ user, onLogin, onLogout, onClearCache }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -151,13 +152,24 @@ export function UserMenu({ user, onLogout, onClearCache }: UserMenuProps) {
           <Trash2 size={16} /> Clear Cache
         </button>
 
-        {user && (
+        {user ? (
           <button
             onClick={onLogout}
             aria-label="Log out"
             className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-neutral-100"
           >
             <LogOut size={16} /> Logout
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              onLogin();
+              setIsOpen(false);
+            }}
+            aria-label="Sign in with GitHub"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-brand-600 hover:bg-brand-50 transition-colors border-t border-neutral-100"
+          >
+            <Github size={16} /> Sign in with GitHub
           </button>
         )}
       </div>

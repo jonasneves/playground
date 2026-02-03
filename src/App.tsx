@@ -28,24 +28,29 @@ function App() {
       }}
       isAuthenticated={isAuthenticated}
     >
-      {showRepoSelector && (
-        <RepositorySelector
-          onSelect={(repo) => {
-            setRepository(repo);
-            setShowRepoSelector(false);
-          }}
-          currentRepository={repository}
-          userLogin={user?.login}
-        />
+      {(onLogin) => (
+        <>
+          {showRepoSelector && (
+            <RepositorySelector
+              onSelect={(repo) => {
+                setRepository(repo);
+                setShowRepoSelector(false);
+              }}
+              currentRepository={repository}
+              userLogin={user?.login}
+            />
+          )}
+          <AppShell
+            config={AppConfig}
+            user={user}
+            onLogin={onLogin}
+            onLogout={logout}
+            onClearCache={() => clearCache(currentRepo.owner, currentRepo.name)}
+            onTrack={track}
+            onNavigate={(route) => navigate(route)}
+          />
+        </>
       )}
-      <AppShell
-        config={AppConfig}
-        user={user}
-        onLogout={logout}
-        onClearCache={() => clearCache(currentRepo.owner, currentRepo.name)}
-        onTrack={track}
-        onNavigate={(route) => navigate(route)}
-      />
     </OAuth>
   );
 }
