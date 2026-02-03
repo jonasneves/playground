@@ -26,7 +26,6 @@ function App() {
       onAuthChange={(token, user) => {
         if (token && user) setAuth(token, user);
       }}
-      isAuthenticated={isAuthenticated}
     >
       {(onLogin) => (
         <>

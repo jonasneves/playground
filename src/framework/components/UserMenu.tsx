@@ -6,7 +6,7 @@ import type { User } from '../types';
 
 interface UserMenuProps {
   user: User | null;
-  onLogin: () => void;
+  onLogin?: () => void;
   onLogout: () => void;
   onClearCache: () => void;
 }
@@ -160,7 +160,7 @@ export function UserMenu({ user, onLogin, onLogout, onClearCache }: UserMenuProp
           >
             <LogOut size={16} /> Logout
           </button>
-        ) : (
+        ) : onLogin ? (
           <button
             onClick={() => {
               onLogin();
@@ -171,7 +171,7 @@ export function UserMenu({ user, onLogin, onLogout, onClearCache }: UserMenuProp
           >
             <Github size={16} /> Sign in with GitHub
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );

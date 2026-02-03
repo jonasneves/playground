@@ -5,7 +5,6 @@ interface OAuthProps {
   children: (onLogin: () => void) => React.ReactNode;
   oauthServiceUrl: string;
   onAuthChange: (token: string | null, user: User | null) => void;
-  isAuthenticated: boolean;
 }
 
 declare global {
@@ -24,8 +23,7 @@ declare global {
 export function OAuth({
   children,
   oauthServiceUrl,
-  onAuthChange,
-  isAuthenticated
+  onAuthChange
 }: OAuthProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [scriptLoaded, setScriptLoaded] = useState(false);
