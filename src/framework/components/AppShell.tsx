@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Rocket, Search } from 'lucide-react';
 import { AppCard } from './AppCard';
 import { UserMenu } from './UserMenu';
@@ -61,6 +61,7 @@ export function AppShell({
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadApps() {
@@ -70,11 +71,7 @@ export function AppShell({
           throw new Error('Failed to load apps registry');
         }
         const registry = await response.json();
-        setApps(registry.apps.map((app: { name: string; path: string; manifest: AppManifest }) => ({
-          name: app.name,
-          path: app.path,
-          manifest: app.manifest
-        })));
+        setApps(registry.apps);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -82,6 +79,20 @@ export function AppShell({
       }
     }
     loadApps();
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement;
+      const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+      if (!isInputFocused && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        searchInputRef.current?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   function handleAppLaunch(appPath: string, appName: string) {
@@ -150,6 +161,7 @@ export function AppShell({
             <div className="relative w-full max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="Search apps..."
                 value={searchQuery}
