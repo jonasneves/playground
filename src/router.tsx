@@ -13,6 +13,7 @@ const Dashboard = lazy(() => import('./apps/dashboard/Dashboard'));
 const FileBrowser = lazy(() => import('./apps/file-browser/FileBrowser'));
 const TodoApp = lazy(() => import('./apps/todo/TodoApp'));
 const SettingsApp = lazy(() => import('./apps/settings/SettingsApp'));
+const MedicalViz = lazy(() => import('./apps/medical-viz/MedicalViz'));
 
 function AppLoader() {
   return (
@@ -121,6 +122,14 @@ export const router = createHashRouter([
     element: (
       <AppWrapper appName="settings">
         <SettingsApp />
+      </AppWrapper>
+    )
+  },
+  {
+    path: '/apps/medical-viz',
+    element: (
+      <AppWrapper appName="medical-viz">
+        <MedicalViz />
       </AppWrapper>
     )
   },

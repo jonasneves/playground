@@ -1,0 +1,8 @@
+{
+  "name": "Medical Visualization",
+  "description": "Interactive anatomical diagrams for clinical decision support",
+  "version": "1.0.0",
+  "tech": ["React", "TypeScript", "ECharts"],
+  "minLauncherVersion": "1.0.0",
+  "reactRoute": "/apps/medical-viz"
+}

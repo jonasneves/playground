@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-01-30T18:56:04.767Z",
+  "generated": "2026-02-03T05:03:23.992Z",
   "apps": [
     {
       "path": "apps/chat",
@@ -74,6 +74,22 @@
         "status": "active",
         "lastUpdated": "2026-01-30",
         "reactRoute": "/apps/file-browser"
+      }
+    },
+    {
+      "path": "apps/medical-viz",
+      "name": "medical-viz",
+      "manifest": {
+        "name": "Medical Visualization",
+        "description": "Interactive anatomical diagrams for clinical decision support",
+        "version": "1.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "ECharts"
+        ],
+        "minLauncherVersion": "1.0.0",
+        "reactRoute": "/apps/medical-viz"
       }
     },
     {
