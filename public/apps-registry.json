@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-02-03T14:18:00.816Z",
+  "generated": "2026-02-03T17:48:21.796Z",
   "apps": [
     {
       "path": "apps/chat",
@@ -90,6 +90,25 @@
         ],
         "minLauncherVersion": "1.0.0",
         "reactRoute": "/apps/medical-viz"
+      }
+    },
+    {
+      "path": "apps/ml-models",
+      "name": "ml-models",
+      "manifest": {
+        "name": "ML Models",
+        "slug": "ml-models",
+        "description": "Explore pre-trained classification models with code examples and visualizations",
+        "version": "1.0.0",
+        "tech": [
+          "React",
+          "TypeScript",
+          "Apache ECharts"
+        ],
+        "entry": "index.html",
+        "status": "active",
+        "lastUpdated": "2026-02-03",
+        "reactRoute": "/apps/ml-models"
       }
     },
     {

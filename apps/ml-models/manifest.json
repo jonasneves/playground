@@ -1,0 +1,11 @@
+{
+  "name": "ML Models",
+  "slug": "ml-models",
+  "description": "Explore pre-trained classification models with code examples and visualizations",
+  "version": "1.0.0",
+  "tech": ["React", "TypeScript", "Apache ECharts"],
+  "entry": "index.html",
+  "status": "active",
+  "lastUpdated": "2026-02-03",
+  "reactRoute": "/apps/ml-models"
+}
