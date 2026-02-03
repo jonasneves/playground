@@ -297,8 +297,9 @@ export function AppShell({
       <UserMenu user={user} onLogout={onLogout} onClearCache={onClearCache} />
       <div className="relative z-10 container pt-4 pb-20">
         <Header title={config.branding.title} subtitle={config.branding.subtitle} />
-        <div className="flex flex-col items-center gap-6 mb-8">
-            <div className="relative w-full max-w-md">
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
               <input
                 ref={searchInputRef}
@@ -331,14 +332,15 @@ export function AppShell({
             />
           </div>
 
-          <div className="mb-4 flex items-center justify-between" role="region" aria-live="polite" aria-atomic="true">
-            <p className="text-sm text-neutral-600">
+          <div className="flex items-center justify-between text-sm" role="region" aria-live="polite" aria-atomic="true">
+            <p className="text-neutral-600">
               {filteredApps.length} {filteredApps.length === 1 ? 'app' : 'apps'}
             </p>
             {!debouncedSearch && recentApps.length > 0 && (
-              <p className="text-xs text-neutral-500">Recently used apps shown first</p>
+              <p className="text-xs text-neutral-500">Recently used shown first</p>
             )}
           </div>
+        </div>
 
           <div className="grid" role="region" aria-label="Applications">
             {filteredApps.map((app, index) => (
